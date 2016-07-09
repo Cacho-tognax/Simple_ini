@@ -23,8 +23,10 @@ public:
     Ini_entry get_ine(std::string name);
     std::string read_line(int pos);
     std::string read_line(std::string name);
-    void set_line(int pos);
-    void set_line(std::string name);
+    void set_line(int pos, std::string value);
+    void set_line(std::string name, std::string value);
+
+    int get_lenght();
 
 
 private:
