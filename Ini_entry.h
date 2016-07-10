@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "Invalid_entry_exeption.h"
+
 const char space=32;
 const char exclamation_mark=33;
 const char double_quotation_mark=34;
@@ -41,7 +43,7 @@ public:
         }
 
     }
-    Ini_entry(std::string entry);
+    Ini_entry(std::string entry) throw(Invalid_entry_exeption);
 
     std::string read();
     static enum type identify(std::string entry);

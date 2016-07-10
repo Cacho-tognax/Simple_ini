@@ -7,7 +7,31 @@
 
 
 
-Ini_entry::Ini_entry(std::string entry) { //TODO implement
+Ini_entry::Ini_entry(std::string entry) throw(Invalid_entry_exeption){
+    type=identify(entry);
+    if (type==to_ignore||type==section_head){
+        throw Invalid_entry_exeption(entry);
+    }
+    std::string tmp="";
+    auto itr=entry.begin();
+    if (type==comment){
+        itr++;
+        for(; itr!=entry.end(); itr++)
+            tmp+=(*itr);
+        name=tmp;
+        value="";
+    } else {
+        for(; (*itr)!=space&&(*itr)!=equal_sign; itr++)
+            tmp+=(*itr);
+        name=tmp;
+        tmp="";
+        itr++;
+        for(; (*itr)==space; itr++); //finding the end of the spaces
+        for(; itr!=entry.end(); itr++){
+            tmp+=(*itr);
+        }
+        value=tmp;
+    }
 
 }
 
@@ -30,8 +54,11 @@ enum type Ini_entry::identify(std::string entry) {
         return comment;
     } else if (tmp == open_square_pharentesis) {    //must find closing or it's an ignored typo
         for (; itr != entry.end(); itr++) {
-            if ((*itr) == close_square_pharentesis)
-                return section_head;
+            if ((*itr) == close_square_pharentesis){
+                itr++;
+                if (itr==entry.end())
+                    return section_head;
+            }
         }
         return to_ignore;
     } else {                         //attempting to understand entry type
@@ -78,7 +105,9 @@ enum type Ini_entry::identify(std::string entry) {
                         return to_ignore;
                     if (*itr == E_letter) {
                         itr++;
-                        return bool_entry;            //anything after wil be ignored and won't appear after a save
+                        if (itr==entry.end())
+                            return bool_entry;
+                        return to_ignore;
                     }
                 }
             }
@@ -99,15 +128,29 @@ enum type Ini_entry::identify(std::string entry) {
                         if (itr == entry.end())
                             return to_ignore;
                         if (*itr == E_letter) {
-                            return bool_entry;            //as above
+                            itr++;
+                            if (itr==entry.end())
+                                return bool_entry;
+                            return to_ignore;
                         }
                     }
                 }
             }
+        }  else if (tmp == double_quotation_mark) {    //must find closing or it's an ignored typo
+            for (; itr != entry.end(); itr++) {
+                if ((*itr) == double_quotation_mark) {
+                    itr++;
+                    if (itr==entry.end())
+                        return string_entry;
+                }
+            }
+            return to_ignore;
+        } else{
+            return to_ignore;
         }
 
     }
-    return to_ignore;
+    return string_entry;             //just to be sure
 }
 
 

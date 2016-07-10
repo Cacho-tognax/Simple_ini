@@ -4,9 +4,8 @@
 
 #include "Ini_manager.h"
 int main(){
-    std::string cat="!a du adudua du dai";
-    if(Ini_entry::identify(cat)==comment)
-        std::cout << "pare fungere" << std::endl;
+    std::string cat="CAT=FALSE";
+    Ini_entry miao(cat);
 
 
 }
