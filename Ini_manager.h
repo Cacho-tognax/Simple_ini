@@ -15,8 +15,25 @@
 class Ini_manager {
     Ini_manager(std::string file_name);
     ~Ini_manager();
+
+    std::list<Ini_entry*>::iterator search(int pos);
+    std::list<Ini_entry*>::iterator search(std::string name);     /* wrapping frequently used code in functions
+                                                                   * both return an iterator to the end of
+                                                                   * the file if not found
+                                                                   */
+
+
+    void add_line(std::string & line);
+    void add_line(std::string & line, int pos);                   /* will add it before the first section
+                                                                   * if pos out of bounds, will add right above the
+                                                                   * first section
+                                                                   */
     void add_line(std::string section, std::string & line);
-    void add_line(std::string section, std::string & line, int pos);
+    void add_line(std::string section, std::string & line, int pos);         //as above
+    void add_line(enum type ty, std::string name, std::string value);
+    void add_line(enum type ty, std::string name, std::string value, int pos);
+    void add_line(std::string section, enum type ty, std::string name, std::string value);
+    void add_line(std::string section, enum type ty, std::string name, std::string value, int pos);
     void remove_line(std::string section, int pos);
     void remove_line(std::string section, std::string name);
     void add_section(std::string name);
@@ -32,8 +49,6 @@ class Ini_manager {
 
 
 private:
-    enum type identify(std::string);
-    Ini_entry convert(std::string);
     std::fstream file;
     std::list<Ini_section*> content;
 
