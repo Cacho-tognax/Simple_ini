@@ -35,6 +35,13 @@ std::list<Ini_entry*>::iterator Ini_section::search(std::string name) { /* can't
 
 }
 
+bool Ini_section::exists(int pos){
+    return (search(pos)!=entries.end());
+}
+
+bool Ini_section::exists(std::string name){
+    return (search(name)!=entries.end());
+}
 
 void Ini_section::add_line(Ini_entry & line) {
     Ini_entry* ptr=new Ini_entry(line);
@@ -42,8 +49,13 @@ void Ini_section::add_line(Ini_entry & line) {
 
 }
 
-void Ini_section::add_line(enum type ty, std::string name, std::string value){
+void Ini_section::add_line(enum entry_type ty, std::string name, std::string value){
     Ini_entry* ptr=new Ini_entry(ty, name, value);
+    entries.push_back(ptr);
+}
+
+void Ini_section::add_line(std::string entry){
+    Ini_entry* ptr=new Ini_entry(entry);
     entries.push_back(ptr);
 }
 
@@ -54,10 +66,16 @@ void Ini_section::add_line(Ini_entry & line, int pos) {
 
 }
 
-void Ini_section::add_line(enum type ty, std::string name, std::string value, int pos){
+void Ini_section::add_line(enum entry_type ty, std::string name, std::string value, int pos){
     Ini_entry* ptr=new Ini_entry(ty, name, value);
     auto itr=search(pos);
-    entries.push_back(ptr);
+    entries.insert(itr, ptr);
+}
+
+void Ini_section::add_line(std::string entry, int pos){
+    Ini_entry* ptr=new Ini_entry(entry);
+    auto itr=search(pos);
+    entries.insert(itr, ptr);
 }
 
 void Ini_section::remove_line(int pos) {

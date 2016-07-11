@@ -41,13 +41,13 @@ std::string Ini_entry::read() {
     if (type==comment) {
         return_string = "!" + name;
     }else {                                        //if not a comment, must be an entry
-        return_string == name + " = " + value;
+        return_string = name + " = " + value;
     }
     return return_string;
 
 }
 
-enum type Ini_entry::identify(std::string entry) {
+enum entry_type Ini_entry::identify(std::string entry) {
     auto itr = entry.begin();
     char tmp = (*itr);
     if (tmp == exclamation_mark) {
