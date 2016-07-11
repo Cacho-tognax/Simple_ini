@@ -6,9 +6,9 @@
 #include <iostream>
 
 #include "Ini_manager.h"
+#include "Tests/unittest-cpp-master/UnitTest++/UnitTest++.h"
 
 
 int main(){
-
-
+    return UnitTest::RunAllTests();
 }

@@ -36,27 +36,11 @@ Ini_manager::~Ini_manager() {
 }
 
 std::list<Ini_entry *>::iterator Ini_manager::search(int pos) {
-    auto itr=content.begin();
-    while (pos>(*itr)->get_lenght()&&itr!=content.end()){            /* if pos is greater than the size of the first section,
-                                                  * it will be searched in other
-                                                  */
-        pos-=(*itr)->get_lenght();
-        itr++;
-    }
-    if (itr==content.end()){
-        std::cout << "error: position exceed file size, returning last entry" << std::endl;
-        itr--;
-        return (*itr)->search((*itr)->get_lenght());
-    }else{
-        return (*itr)->search(pos);
-    }
+
 }
 
 std::list<Ini_entry *>::iterator Ini_manager::search(std::string name) {
-    for(auto itr=content.begin(); itr!=content.end(); itr ++){
-        if((*itr)->exists(name))
-            return
-    }
+
 }
 
 std::list<Ini_section *>::iterator Ini_manager::section_search(int pos) {
@@ -124,21 +108,19 @@ void Ini_manager::remove_section(int pos) {
 }
 
 Ini_entry Ini_manager::get_ine(std::string section, int pos) {
-    return Ini_entry(string_entry, std::basic_string<char, char_traits < _CharT>, allocator < _CharT >> (),
-                     std::basic_string<char, char_traits < _CharT>, allocator < _CharT >> ());
+
 }
 
 Ini_entry Ini_manager::get_ine(std::string section, std::string name) {
-    return Ini_entry(string_entry, std::basic_string<char, char_traits < _CharT>, allocator < _CharT >> (),
-                     std::basic_string<char, char_traits < _CharT>, allocator < _CharT >> ());
+
 }
 
 std::string Ini_manager::read_line(std::string section, int pos) {
-    return std::basic_string<char, char_traits < _CharT>, allocator < _CharT >> ();
+
 }
 
 std::string Ini_manager::read_line(std::string section, std::string name) {
-    return std::basic_string<char, char_traits < _CharT>, allocator < _CharT >> ();
+
 }
 
 void Ini_manager::set_line(std::string section, int pos, std::string value) {
