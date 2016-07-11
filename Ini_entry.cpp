@@ -7,10 +7,10 @@
 
 
 
-Ini_entry::Ini_entry(std::string entry) throw(Invalid_entry_exeption){
+Ini_entry::Ini_entry(std::string entry) throw(Invalid_entry_exception){
     type=identify(entry);
     if (type==to_ignore||type==section_head){
-        throw Invalid_entry_exeption(entry);
+        throw Invalid_entry_exception(entry);
     }
     std::string tmp="";
     auto itr=entry.begin();

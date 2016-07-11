@@ -8,9 +8,9 @@
 #include <exception>
 #include <string>
 
-class Invalid_entry_exeption: public std::exception {
+class Invalid_entry_exception : public std::exception {
 public:
-    Invalid_entry_exeption(std::string req):requested(req){
+    Invalid_entry_exception(std::string req): requested(req){
 
     }
     std::string requested;
