@@ -34,12 +34,14 @@ public:
     void remove_line(std::string name);
     Ini_entry get_ine(int pos) ;
     Ini_entry get_ine(std::string name) ;
+    std::string read();
     std::string read_line(int pos) ;
     std::string read_line(std::string name) ;
     void set_line(int pos, std::string value);
     void set_line(std::string name, std::string value);
 
     int get_lenght();
+    std::string get_name();
 
 
 private:

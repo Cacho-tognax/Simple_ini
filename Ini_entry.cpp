@@ -47,7 +47,9 @@ std::string Ini_entry::read() {
     std::string return_string;
     if (type==comment) {
         return_string = "!" + name;
-    }else {                                        //if not a comment, must be an entry
+    }else if(type==string_entry) {
+        return_string = name + " = \"" + value + "\"";
+    }else {
         return_string = name + " = " + value;
     }
     return return_string;

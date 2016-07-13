@@ -119,6 +119,14 @@ Ini_entry Ini_section::get_ine(std::string name) {
     }
 }
 
+std::string Ini_section::read(){
+    std::string tmp="";
+    for (auto itr=entries.begin(); itr!=entries.end(); itr ++) {
+        tmp += (*itr)->read()+"\n";
+    }
+    return tmp;
+}
+
 std::string Ini_section::read_line(int pos) {
     auto itr=search(pos);
     return (*itr)->read();
@@ -144,3 +152,9 @@ void Ini_section::set_line(std::string name, std::string value) {
 int Ini_section::get_lenght() {
     return entries.size();
 }
+
+std::string Ini_section::get_name() {
+    return name;
+}
+
+

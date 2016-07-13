@@ -15,6 +15,7 @@
 const int max_line_size=50;
 
 class Ini_manager {
+public:
     Ini_manager(std::string file_name);
     ~Ini_manager();
 
@@ -37,6 +38,7 @@ class Ini_manager {
     void remove_section(int pos);
     Ini_entry get_ine(std::string section, int pos);
     Ini_entry get_ine(std::string section, std::string name);
+    std::string read();
     std::string read_line(std::string section, int pos);
     std::string read_line(std::string section, std::string name);
     void set_line(std::string section, int pos, std::string value);

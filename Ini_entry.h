@@ -48,6 +48,16 @@ public:
     std::string read();
     static enum entry_type identify(std::string entry);
 
+    bool operator ==(const Ini_entry rhs) const{
+        if(name!=rhs.getName())
+            return false;
+        if(value!=rhs.getValue())
+            return false;
+        if(type!=rhs.getType())
+            return false;
+        return true;
+    }
+
 
     const entry_type &getType() const {
         return type;

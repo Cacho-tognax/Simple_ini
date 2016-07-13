@@ -14,13 +14,14 @@ Ini_manager::Ini_manager(std::string file_name) {
                 if (Ini_entry::identify(tmp) == section_head) {
                     content.push_back(current);
                     tmp.erase(tmp.begin());
-                    tmp.erase(tmp.end());            //removing [ and ], will be added later on save
+                    tmp.erase(--tmp.end());            //removing [ and ], will be added later on save
                     current = new Ini_section(tmp);
                 } else {
                     current->add_line(tmp);
                 }
             }
         }
+        content.push_back(current);
         std::cout << "file loaded" << std::endl;
     } else{
         std::cout << "error loading file" << std::endl;
@@ -113,6 +114,18 @@ Ini_entry Ini_manager::get_ine(std::string section, int pos) {
 
 Ini_entry Ini_manager::get_ine(std::string section, std::string name) {
 
+}
+
+std::string Ini_manager::read(){
+    std::string tmp="";
+    auto itr=content.begin();
+    tmp+=(*itr)->read();         //first section has no section header
+    itr++;
+    for(; itr!=content.end(); itr++){
+        tmp+="["+(*itr)->get_name()+"]\n";
+        tmp+=(*itr)->read();
+    }
+    return tmp;
 }
 
 std::string Ini_manager::read_line(std::string section, int pos) {
