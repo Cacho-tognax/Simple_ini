@@ -24,8 +24,8 @@ const char R_letter=82;
 const char S_letter=83;
 const char T_letter=84;
 const char U_letter=85;
-const char open_square_pharentesis=91;
-const char close_square_pharentesis=93;
+const char open_square_parenthesis=91;
+const char close_square_parenthesis=93;
 
 
 enum entry_type { comment, section_head, bool_entry, int_entry,

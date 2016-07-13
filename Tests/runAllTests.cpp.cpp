@@ -1,9 +1,11 @@
 //
-// Created by stefano lavori on 11/07/2016.
-//
+// Created by stefano lavori on 11/07/2016
 
-#include "unittest-cpp-master/UnitTest++/UnitTest++.h"
 
-int main(){
-    //return UnitTest::RunAllTests();
+
+#include <gtest/gtest.h>
+
+int main(int argc, char** argv){
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

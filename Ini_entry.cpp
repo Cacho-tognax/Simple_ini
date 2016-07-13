@@ -26,9 +26,16 @@ Ini_entry::Ini_entry(std::string entry) throw(Invalid_entry_exception){
         name=tmp;
         tmp="";
         itr++;
-        for(; (*itr)==space; itr++); //finding the end of the spaces
-        for(; itr!=entry.end(); itr++){
-            tmp+=(*itr);
+        for(; (*itr)==space||(*itr)==equal_sign; itr++); //finding the end of the spaces
+        if (type==string_entry){
+            itr++;                                     //removing the ""
+            for(; itr!=entry.end()&&(*itr)!=double_quotation_mark; itr++){
+                tmp+=(*itr);
+            }
+        } else {
+            for(; itr!=entry.end(); itr++){
+                tmp+=(*itr);
+            }
         }
         value=tmp;
     }
@@ -52,9 +59,9 @@ enum entry_type Ini_entry::identify(std::string entry) {
     char tmp = (*itr);
     if (tmp == exclamation_mark) {
         return comment;
-    } else if (tmp == open_square_pharentesis) {    //must find closing or it's an ignored typo
+    } else if (tmp == open_square_parenthesis) {    //must find closing or it's an ignored typo
         for (; itr != entry.end(); itr++) {
-            if ((*itr) == close_square_pharentesis){
+            if ((*itr) == close_square_parenthesis){
                 itr++;
                 if (itr==entry.end())
                     return section_head;
