@@ -16,8 +16,15 @@ const int max_line_size=50;
 
 class Ini_manager {
 public:
+    Ini_manager();
     Ini_manager(std::string file_name);
     ~Ini_manager();
+
+    void open_file(std::string file_name);
+    void save();
+    void save_as(std::string new_file_name);
+    void close_file();
+
 
     void add_line(std::string & line);
     void add_line(std::string & line, int pos);                   /* will add it before the first section
@@ -57,7 +64,9 @@ private:
     std::list<Ini_section*>::iterator section_search(std::string name);
 
 
-    std::fstream file;
+    std::string file_name;
+    std::ifstream i_file;
+    std::ofstream o_file;
     std::list<Ini_section*> content;
 
 };

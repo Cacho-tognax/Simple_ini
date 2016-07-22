@@ -9,6 +9,9 @@
 
 
 int main(){
-    Ini_manager boh("Test.ini");
+    Ini_manager boh("Saving test file.ini");
+    boh.close_file();
+    boh.open_file("Test.ini");
+    boh.read();
     return 0;
 }

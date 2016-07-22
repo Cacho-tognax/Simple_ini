@@ -42,3 +42,4 @@ Makefile.in
 *.log
 *.trs
 *.pc
+/Saving test file.ini

@@ -9,9 +9,7 @@ Ini_section::Ini_section(std::string name): name(name) {
 }
 
 Ini_section::~Ini_section() {
-    for(auto itr=entries.begin(); itr!=entries.end(); itr ++){
-        delete (*itr);  //the section owns the entries
-    }
+    entries.erase(entries.begin(), entries.end());
 
 }
 

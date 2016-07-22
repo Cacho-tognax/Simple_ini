@@ -5,8 +5,28 @@
 #include <gtest/gtest.h>
 #include "../Ini_manager.h"
 
-TEST(Testing_manager, Constructor_test) {
+TEST(Testing_manager, Open_test) {
+    Ini_manager testing;
+    testing.open_file("Test.ini");
+    std::string testini=
+            "CAT = TRUE\n"
+                    "DOG = 1\n"
+                    "F = 1.1\n"
+                    "G = \"ok\"\n"
+                    "!unsectioned comment\n"
+                    "[section head with entries]\n"
+                    "Pi = 3.14\n"
+                    "Internet = \"cats\"\n"
+                    "[added section]\n"
+                    "an added entry = 1\n";
+    ASSERT_EQ(testing.read(), testini);
+}
+
+TEST(Testing_manager, Save_test){
     Ini_manager testing("Test.ini");
+    testing.save_as("Saving test file.ini");
+    testing.close_file();
+    testing.open_file("Saving test file.ini");
     std::string testini=
             "CAT = TRUE\n"
                     "DOG = 1\n"
