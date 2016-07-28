@@ -83,28 +83,14 @@ void Ini_manager::save_as(std::string new_file_name){
 
 void Ini_manager::close_file() {
     if(i_file.is_open()) {
+        for(auto itr=content.begin(); itr!=content.end(); itr ++){
+            delete (*itr);  //the manager owns the sections
+        }
         content.erase(content.begin(), content.end());
         i_file.close();
     }else{
         std::cout << "error: no file to close" << std::endl;
     }
-}
-
-
-std::list<Ini_entry *>::iterator Ini_manager::search(int pos) {
-
-}
-
-std::list<Ini_entry *>::iterator Ini_manager::search(std::string name) {
-
-}
-
-std::list<Ini_section *>::iterator Ini_manager::section_search(int pos) {
-    return std::_List_iterator<Ini_section *>();
-}
-
-std::list<Ini_section *>::iterator Ini_manager::section_search(std::string name) {
-    return std::_List_iterator<Ini_section *>();
 }
 
 void Ini_manager::add_line(std::string &line) {
@@ -204,3 +190,50 @@ void Ini_manager::set_line(std::string section, std::string name, std::string va
 
 }
 
+std::list<Ini_section *>::iterator Ini_manager::search(int &pos) {
+    if(pos<0){
+        std::cout << "error: negative index" << std::endl;
+        return content.end();
+    }
+    auto itr =content.begin();
+    while(itr!=content.end()){
+        if((*itr)->get_length()<pos){
+            return itr;
+        }else{
+            pos-=(*itr)->get_length();
+            itr++;
+        }
+    }
+    return itr;
+}
+
+std::list<Ini_section *>::iterator Ini_manager::search(std::string name) {
+
+    for(auto itr =content.begin();itr!=content.end();itr++){
+        if((*itr)->exists(name))
+            return itr;
+    }
+    return content.end();
+}
+
+std::list<Ini_section *>::iterator Ini_manager::section_search(int pos) {
+    if(pos<0){
+        std::cout << "error: negative index" << std::endl;
+        return content.end();
+    }
+    if(pos>=content.size()){
+        return content.end();
+    }
+    auto itr = content.begin();
+    for(; pos>0; pos--)                     //getting the iterator to the section
+        itr++;
+    return itr;
+}
+
+std::list<Ini_section *>::iterator Ini_manager::section_search(std::string name) {
+    for(auto itr = content.begin();itr!=content.end(); itr++) {
+        if ((*itr)->get_name()==name)
+            return itr;
+    }
+    return content.end();
+}

@@ -22,7 +22,7 @@ public:
 
     void open_file(std::string file_name);
     void save();
-    void save_as(std::string new_file_name);
+    void save_as(std::string new_file_name);   //after savig as the class will link to the new file
     void close_file();
 
 
@@ -54,10 +54,12 @@ public:
 
 private:
 
-    std::list<Ini_entry*>::iterator search(int pos);
-    std::list<Ini_entry*>::iterator search(std::string name);     /* wrapping frequently used code in functions
-                                                                   * both return an iterator to the end of
-                                                                   * the file if not found
+    std::list<Ini_section*>::iterator search(int &pos);            /* will return the section with that position and
+                                                                    * modify pos to the relative position in the section
+                                                                    */
+    std::list<Ini_section*>::iterator search(std::string name);   /* wrapping frequently used code in functions
+                                                                   * both return an iterator to the last section
+                                                                   * of the file if not found
                                                                    */
 
     std::list<Ini_section*>::iterator section_search(int pos);

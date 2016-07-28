@@ -5,9 +5,20 @@
 #include <gtest/gtest.h>
 #include "../Ini_manager.h"
 
-TEST(Testing_manager, Open_test) {
+
+class Testing_manager : public ::testing::Test {
+protected:
+    virtual void SetUp(){
+        testing.open_file("Test.ini");
+    }
+    virtual void TearDown(){
+        testing.close_file();
+    }
+
     Ini_manager testing;
-    testing.open_file("Test.ini");
+};
+
+TEST_F(Testing_manager, Open_test) {
     std::string testini=
             "CAT = TRUE\n"
                     "DOG = 1\n"
@@ -22,8 +33,7 @@ TEST(Testing_manager, Open_test) {
     ASSERT_EQ(testing.read(), testini);
 }
 
-TEST(Testing_manager, Save_test){
-    Ini_manager testing("Test.ini");
+TEST_F(Testing_manager, Save_test){
     testing.save_as("Saving test file.ini");
     testing.close_file();
     testing.open_file("Saving test file.ini");

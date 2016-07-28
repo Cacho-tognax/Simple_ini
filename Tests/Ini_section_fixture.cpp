@@ -1,0 +1,79 @@
+//
+// Created by dfg on 27/07/16.
+//
+
+
+#include "../Ini_section.h"
+
+#include <gtest/gtest.h>
+
+
+class section_fixture_test : public ::testing::Test {
+public:
+    section_fixture_test():testing("under test"){
+
+    }
+
+protected:
+    virtual void SetUp(){
+        testing.add_line("!a comment");
+        testing.add_line("CAT=TRUE");
+        testing.add_line("DOG=7");
+        testing.add_line("ANSWER=42");
+        testing.add_line("NAME=\"MARVIN\"");
+    }
+    virtual void TearDown(){
+
+    }
+
+    Ini_section testing;
+};
+
+TEST_F(section_fixture_test, testing_read){
+    std::string expected_line="DOG = 7";
+    ASSERT_EQ(testing.read_line(2), expected_line);
+    ASSERT_EQ(testing.read_line("DOG"), expected_line);
+    std::string expected="!a comment\n"
+            "CAT = TRUE\n"
+            "DOG = 7\n"
+            "ANSWER = 42\n"
+            "NAME = \"MARVIN\"\n";
+    ASSERT_EQ(testing.read(), expected);
+}
+
+TEST_F(section_fixture_test, testing_remove) {
+    testing.remove_line(0);
+    testing.remove_line(4);
+    testing.remove_line("DOG");
+    testing.remove_line("DOG");
+    testing.remove_line("not present");
+    std::string expected="CAT = TRUE\n"
+            "ANSWER = 42\n"
+            "NAME = \"MARVIN\"\n";
+    ASSERT_EQ(testing.get_length(), 3);
+    ASSERT_EQ(testing.read(), expected);
+
+}
+
+TEST_F(section_fixture_test, testing_set) {
+    testing.set_line(0, "FALSE");
+    testing.set_line(1, "FALSE");
+    testing.set_line("NAME", "\"NO NAME\"");
+    testing.set_line("not present", "FALSE");
+    testing.set_line_type(2, float_entry, "5.3");
+    testing.set_line_type(2, float_entry, "5");
+    testing.set_line_type("ANSWER", bool_entry, "TRUE");
+    testing.set_line_type("ANSWER", bool_entry, "5.3");
+    std::string expected="!a comment\n"
+            "CAT = FALSE\n"
+            "DOG = 5.3\n"
+            "ANSWER = TRUE\n"
+            "NAME = \"NO NAME\"\n";
+    ASSERT_EQ(testing.read(), expected);
+}
+
+TEST_F(section_fixture_test, testing_exists){
+    ASSERT_EQ(testing.exists("ANSWER"), true);
+    ASSERT_EQ(testing.exists("not present"), false);
+
+}

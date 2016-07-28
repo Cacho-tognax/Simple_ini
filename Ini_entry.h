@@ -6,12 +6,14 @@
 #define SIMPLE_INI_INI_ENTRY_H
 
 #include <string>
+#include <iostream>
 
 #include "Invalid_entry_exception.h"
 
 const char space=32;
 const char exclamation_mark=33;
 const char double_quotation_mark=34;
+const char minus_sign=45;
 const char dot=46;
 const char numbers_start=48;
 const char numbers_end=57;
@@ -37,50 +39,82 @@ enum entry_type { comment, section_head, bool_entry, int_entry,
 
 class Ini_entry {
 public:
-    Ini_entry(enum entry_type ty, std::string name, std::string value): type(ty), name(name), value(value) {
+    Ini_entry(enum entry_type ty, std::string name, std::string value) throw(Invalid_entry_exception):
+                                                                                type(ty), name(name), value(value) {
         if (type==comment){
             this->value="";
+        } else{
+            std::string tmp= name + " = " + value;
+            if(identify(tmp)!=type){
+                throw Invalid_entry_exception(tmp);
+            }
         }
 
     }
     Ini_entry(std::string entry) throw(Invalid_entry_exception);
 
-    std::string read();
+    void set(std::string entry) throw(Invalid_entry_exception);
+
+    void set(enum entry_type ty, std::string name, std::string value) throw(Invalid_entry_exception);
+
+    std::string read() const;
     static enum entry_type identify(std::string entry);
 
     bool operator ==(const Ini_entry rhs) const{
-        if(name!=rhs.getName())
+        if(name!= rhs.get_name())
             return false;
-        if(value!=rhs.getValue())
+        if(value!= rhs.get_value())
             return false;
-        if(type!=rhs.getType())
+        if(type!= rhs.get_type())
             return false;
         return true;
     }
 
 
-    const entry_type &getType() const {
+    const entry_type &get_type() const {
         return type;
     }
 
-    void setType(const entry_type &typ) {
-        type = typ;
+    void change_type(const entry_type &typ, const std::string &valu) {
+        if(type==comment){
+            std::cout << "can't change comment entry type" << std::endl;
+        }
+        std::string tmp = name + " = " + valu;
+        if(identify(tmp)==typ) {
+            type = typ;
+            value = valu;
+        } else{
+            std::cout << "new value type and new type are not equal" << std::endl;
+        }
     }
 
-    const std::string &getName() const {
+    const std::string &get_name() const {
         return name;
     }
 
-    void setName(const std::string &nam) {
+    void set_name(const std::string &nam) {
         name = nam;
     }
 
-    const std::string &getValue() const {
+    const std::string &get_value() const {
         return value;
     }
 
-    void setValue(const std::string &valu) {
-       value = valu;
+    void set_value(std::string valu) {
+        if(type!=comment) {
+            std::string tmp = name + " = " + valu;
+            if (identify(tmp) == type) {
+                if (type==string_entry) {  // removing the ""
+                    valu.erase(valu.begin());
+                    valu.erase(--valu.end());
+                }
+                value = valu;
+            } else {
+                std::cout << "new value type and current type are not equal" << std::endl;
+            }
+        }else{
+            std::cout << "can't change comment value!" << std::endl;
+        }
     }
 
 

@@ -17,7 +17,6 @@ public:
     Ini_section(std::string name);
     ~Ini_section();
 
-    bool exists(int pos);                      //TODO farlo fungere!!!
     bool exists(std::string name);
 
     void add_line(Ini_entry & line);
@@ -32,15 +31,17 @@ public:
     void add_line(std::string entry, int pos);
     void remove_line(int pos);
     void remove_line(std::string name);
-    Ini_entry get_ine(int pos) ;
-    Ini_entry get_ine(std::string name) ;
+    Ini_entry get_line(int pos) ;
+    Ini_entry get_line(std::string name) ;
     std::string read();
     std::string read_line(int pos) ;
     std::string read_line(std::string name) ;
     void set_line(int pos, std::string value);
     void set_line(std::string name, std::string value);
+    void set_line_type(int pos, enum entry_type typ, std::string value);
+    void set_line_type(std::string name, enum entry_type typ, std::string value);
 
-    int get_lenght();
+    unsigned long int get_length();
     std::string get_name();
 
 

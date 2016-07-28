@@ -7,10 +7,10 @@
 
 TEST(Ini_section_test, Test_constructor) {
     Ini_section testing("Under_test");
-    ASSERT_EQ(testing.get_lenght(), 0);
+    ASSERT_EQ(testing.get_length(), 0);
     ASSERT_EQ(testing.get_name(), "Under_test");
 }
-TEST(Ini_section_test, Test_add){
+TEST(Ini_section_test, Test_add_and_get){
     Ini_section testing("Under_test");
     Ini_entry string("!string");
     testing.add_line("!string");
@@ -18,12 +18,29 @@ TEST(Ini_section_test, Test_add){
     testing.add_line(bool_entry, "Definition", "TRUE");
     Ini_entry entry("Answer=42");
     testing.add_line(entry, 1);
+    Ini_entry unordered_entry("0=5");
+    testing.add_line(unordered_entry);
+    Ini_entry ordered_definition(bool_entry, "1", "TRUE");
+    testing.add_line(bool_entry, "1", "TRUE", 4);
+    Ini_entry ordered_string("4=5");
+    testing.add_line("4=5", 4);
 
-    ASSERT_EQ(testing.get_ine(0), string);
-    ASSERT_EQ(testing.get_ine(1), entry);
-    ASSERT_EQ(testing.get_ine(2), definition);
-}
+    Ini_entry dummy(comment, "Error: line does not exists", "");
 
-TEST(Ini_section_test, Test_read) {  //TODO actualy make
+    ASSERT_EQ(testing.get_line(0), string);
+    ASSERT_EQ(testing.get_line(1), entry);
+    ASSERT_EQ(testing.get_line(2), definition);
+    ASSERT_EQ(testing.get_line(3), unordered_entry);
+    ASSERT_EQ(testing.get_line(4), ordered_string);
+    ASSERT_EQ(testing.get_line(5), ordered_definition);
+    ASSERT_EQ(testing.get_line(6), dummy);
+
+    ASSERT_EQ(testing.get_line("string"), string);
+    ASSERT_EQ(testing.get_line("Definition"), definition);
+    ASSERT_EQ(testing.get_line("Answer"), entry);
+    ASSERT_EQ(testing.get_line("0"), unordered_entry);
+    ASSERT_EQ(testing.get_line("1"), ordered_definition);
+    ASSERT_EQ(testing.get_line("4"), ordered_string);
+    ASSERT_EQ(testing.get_line("not exisiting"), dummy);
 
 }

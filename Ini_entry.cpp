@@ -8,6 +8,10 @@
 
 
 Ini_entry::Ini_entry(std::string entry) throw(Invalid_entry_exception){
+    set(entry);
+}
+
+void Ini_entry::set(std::string entry) throw(Invalid_entry_exception){
     type=identify(entry);
     if (type==to_ignore||type==section_head){
         throw Invalid_entry_exception(entry);
@@ -44,7 +48,24 @@ Ini_entry::Ini_entry(std::string entry) throw(Invalid_entry_exception){
 
 }
 
-std::string Ini_entry::read() {
+void Ini_entry::set(enum entry_type ty, std::string name, std::string value) throw(Invalid_entry_exception){
+    this->type=ty;
+    if (type==comment){
+        this->name=name;
+        this->value="";
+    } else{
+        std::string tmp= name + " = " + value;
+        if(identify(tmp)!=type){
+            throw Invalid_entry_exception(tmp);
+        }else{
+            this->name=name;
+            this->value=value;
+        }
+    }
+
+}
+
+std::string Ini_entry::read() const{
 
     std::string return_string;
     if (type==comment) {
@@ -91,10 +112,15 @@ enum entry_type Ini_entry::identify(std::string entry) {
         if (itr == entry.end())
             return to_ignore;
         tmp = (*itr);
-        if (numbers_start <= tmp && tmp <= numbers_end) {     /* it's either an int or a float,
+        if ((numbers_start <= tmp && tmp <= numbers_end) || (tmp==minus_sign)){     /* it's either an int or a float,
                                                                    * attempting to identify, if a non number is found
                                                                    * the line will be ignored
                                                                    */
+            if (tmp==minus_sign){
+                itr++;
+                if(itr==entry.end())    //only a minus without a number
+                    return to_ignore;
+            }
             for (; itr != entry.end(); itr++) {
                 tmp = (*itr);
                 if ((tmp < numbers_start || tmp > numbers_end) && tmp != dot)
