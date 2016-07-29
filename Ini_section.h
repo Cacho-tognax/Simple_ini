@@ -15,11 +15,12 @@
 class Ini_section {
 public:
     Ini_section(std::string name);
-    ~Ini_section();
+    Ini_section(const Ini_section &source);
+    virtual ~Ini_section();
 
     bool exists(std::string name);
 
-    void add_line(Ini_entry & line);
+    void add_line(const Ini_entry & line);
     void add_line(enum entry_type ty, std::string name, std::string value);
     void add_line(std::string entry);                                    /* with no specified position it places it
                                                                           * at the end of the section
@@ -31,24 +32,31 @@ public:
     void add_line(std::string entry, int pos);
     void remove_line(int pos);
     void remove_line(std::string name);
-    Ini_entry get_line(int pos) ;
-    Ini_entry get_line(std::string name) ;
-    std::string read();
-    std::string read_line(int pos) ;
-    std::string read_line(std::string name) ;
+    Ini_entry get_line(unsigned long int pos)const;
+    Ini_entry get_line(std::string name)const;
+    std::string read()const;
+    std::string read_line(int pos)const;
+    std::string read_line(std::string name)const;
     void set_line(int pos, std::string value);
     void set_line(std::string name, std::string value);
     void set_line_type(int pos, enum entry_type typ, std::string value);
     void set_line_type(std::string name, enum entry_type typ, std::string value);
 
-    unsigned long int get_length();
-    std::string get_name();
+    unsigned long int get_length()const;
+    std::string get_name()const;
 
 
 private:
 
-    std::list<Ini_entry*>::iterator search(int pos) ;
-    std::list<Ini_entry*>::iterator search(std::string name) ;     /* wrapping frequently used code in functions
+    Ini_section operator =(const Ini_section &rhs){
+
+    }
+    Ini_section operator =(const Ini_section &&rhs){
+
+    }
+
+    std::list<Ini_entry*>::const_iterator search(int pos)const;
+    std::list<Ini_entry*>::const_iterator search(std::string name)const;     /* wrapping frequently used code in functions
                                                                    * both return entries.end() if not found
                                                                    */
     std::string name;

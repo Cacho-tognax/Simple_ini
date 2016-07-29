@@ -133,31 +133,88 @@ void Ini_manager::remove_line(std::string section, std::string name) {
 
 }
 
-void Ini_manager::add_section(std::string name) {
-
+void Ini_manager::add_section(std::string name, int pos) {
+    auto itr=section_search(pos);
+    content.insert(itr, new Ini_section(name));
 }
 
-void Ini_manager::add_section(std::string name, int pos) {
-
+void Ini_manager::add_section(Ini_section * section, int pos){
+    auto itr=section_search(pos);
+    content.insert(itr, section);
 }
 
 void Ini_manager::remove_section(std::string name) {
-
+    auto itr=section_search(name);
+    if(itr==content.end()) {
+        std::cout << "Error: no such section found" << std::endl;
+    }else{
+        delete (*itr);
+        if(itr!=content.begin()) {  //when asked to remove the unsectioned, the section must be recreated
+            content.erase(itr);
+        }else{
+            content.push_front(new Ini_section("unsectioned"));
+        }
+    }
 }
 
 void Ini_manager::remove_section(int pos) {
-
+    auto itr=section_search(pos);
+    if(itr==content.end()) {
+        std::cout << "Error: no such section found" << std::endl;
+    }else{
+        delete (*itr);
+        content.erase(itr);
+    }
 }
 
-Ini_entry Ini_manager::get_ine(std::string section, int pos) {
-
+Ini_entry Ini_manager::get_line(int pos, std::string section)const{
+    auto itr=section_search(section);
+    if (section=="")
+        itr=content.begin();
+    if(itr==content.end()){
+        std::cout << "Error: no such section found" << std::endl;
+        return Ini_entry(comment, "Error: line does not exists", "");
+    }else{
+        return (*itr)->get_line(pos);
+    }
 }
 
-Ini_entry Ini_manager::get_ine(std::string section, std::string name) {
-
+Ini_entry Ini_manager::get_line(std::string name, std::string section)const{
+    auto itr=section_search(section);
+    if (section=="")
+        itr=content.begin();
+    if(itr==content.end()){
+        std::cout << "Error: no such section found" << std::endl;
+        return Ini_entry(comment, "Error: line does not exists", "");
+    }else{
+        return (*itr)->get_line(name);
+    }
 }
 
-std::string Ini_manager::read(){
+
+Ini_entry Ini_manager::get_any_line(int pos)const{
+    auto itr= search(pos);
+    if(itr==content.end()){
+        std::cout << "no such line exists in any section" << std::endl;
+        return Ini_entry(comment, "Error: line does not exists", "");
+    }else{
+        return (*itr)->get_line(pos);
+    }
+}
+
+Ini_entry Ini_manager::get_any_line(std::string name)const{
+    auto itr= search(name);
+    if(itr==content.end()){
+        std::cout << "no such line exists in any section" << std::endl;
+        return Ini_entry(comment, "Error: line does not exists", "");
+    }else{
+        return (*itr)->get_line(name);
+    }
+}
+
+
+
+std::string Ini_manager::read()const{
     if(i_file.is_open()) {
         std::string tmp = "";
         auto itr = content.begin();
@@ -174,30 +231,101 @@ std::string Ini_manager::read(){
     }
 }
 
-std::string Ini_manager::read_line(std::string section, int pos) {
-
+std::string Ini_manager::read_line(int pos, std::string section)const{
+    auto itr=section_search(section);
+    if (section=="")
+        itr=content.begin();
+    if(itr==content.end()){
+        std::cout << "Error: no such section found" << std::endl;
+        return "section not found";
+    }else{
+        return (*itr)->read_line(pos);
+    }
 }
 
-std::string Ini_manager::read_line(std::string section, std::string name) {
-
+std::string Ini_manager::read_line(std::string name, std::string section)const{
+    auto itr=section_search(section);
+    if (section=="")
+        itr=content.begin();
+    if(itr==content.end()){
+        std::cout << "Error: no such section found" << std::endl;
+        return "section not found";
+    }else{
+        return (*itr)->read_line(name);
+    }
 }
 
-void Ini_manager::set_line(std::string section, int pos, std::string value) {
 
+std::string Ini_manager::read_any_line(int pos)const{
+    auto itr= search(pos);
+    if(itr==content.end()){
+        std::cout << "no such line exists in any section" << std::endl;
+        return "not found";
+    }else{
+        return (*itr)->read_line(pos);
+    }
 }
 
-void Ini_manager::set_line(std::string section, std::string name, std::string value) {
-
+std::string Ini_manager::read_any_line(std::string name)const{
+    auto itr= search(name);
+    if(itr==content.end()){
+        std::cout << "no such line exists in any section" << std::endl;
+        return "not found";
+    }else{
+        return (*itr)->read_line(name);
+    }
 }
 
-std::list<Ini_section *>::iterator Ini_manager::search(int &pos) {
+
+void Ini_manager::set_line(int pos, std::string value, std::string section) {
+    auto itr=section_search(section);
+    if (section=="")
+        itr=content.begin();
+    if(itr==content.end()){
+        std::cout << "Error: no such section found" << std::endl;
+    }else{
+        (*itr)->set_line(pos, value);
+    }
+}
+
+void Ini_manager::set_line(std::string name, std::string value, std::string section) {
+    auto itr=section_search(section);
+    if (section=="")
+        itr=content.begin();
+    if(itr==content.end()){
+        std::cout << "Error: no such section found" << std::endl;
+    }else{
+        (*itr)->set_line(name, value);
+    }
+}
+
+void Ini_manager::set_any_line(int pos, std::string value) {
+    auto itr= search(pos);
+    if(itr==content.end()){
+        std::cout << "no such line exists in any section" << std::endl;
+    }else{
+        (*itr)->set_line(pos, value);
+    }
+}
+
+void Ini_manager::set_any_line(std::string name, std::string value) {
+    auto itr= search(name);
+    if(itr==content.end()){
+        std::cout << "no such line exists in any section" << std::endl;
+    }else{
+        (*itr)->set_line(name, value);
+    }
+}
+
+
+std::list<Ini_section *>::const_iterator Ini_manager::search(int &pos)const{
     if(pos<0){
         std::cout << "error: negative index" << std::endl;
         return content.end();
     }
     auto itr =content.begin();
     while(itr!=content.end()){
-        if((*itr)->get_length()<pos){
+        if((*itr)->get_length()>pos){
             return itr;
         }else{
             pos-=(*itr)->get_length();
@@ -207,7 +335,7 @@ std::list<Ini_section *>::iterator Ini_manager::search(int &pos) {
     return itr;
 }
 
-std::list<Ini_section *>::iterator Ini_manager::search(std::string name) {
+std::list<Ini_section *>::const_iterator Ini_manager::search(std::string name)const{
 
     for(auto itr =content.begin();itr!=content.end();itr++){
         if((*itr)->exists(name))
@@ -216,8 +344,11 @@ std::list<Ini_section *>::iterator Ini_manager::search(std::string name) {
     return content.end();
 }
 
-std::list<Ini_section *>::iterator Ini_manager::section_search(int pos) {
+std::list<Ini_section *>::const_iterator Ini_manager::section_search(int pos)const{
     if(pos<0){
+        if(pos==end_content){
+            return content.end();
+        }
         std::cout << "error: negative index" << std::endl;
         return content.end();
     }
@@ -230,7 +361,7 @@ std::list<Ini_section *>::iterator Ini_manager::section_search(int pos) {
     return itr;
 }
 
-std::list<Ini_section *>::iterator Ini_manager::section_search(std::string name) {
+std::list<Ini_section *>::const_iterator Ini_manager::section_search(std::string name)const{
     for(auto itr = content.begin();itr!=content.end(); itr++) {
         if ((*itr)->get_name()==name)
             return itr;

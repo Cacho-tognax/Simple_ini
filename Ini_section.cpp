@@ -8,6 +8,12 @@ Ini_section::Ini_section(std::string name): name(name) {
 
 }
 
+Ini_section::Ini_section(const Ini_section &source): name(source.get_name()){
+    unsigned long int source_size=source.get_length();
+    for(unsigned long int i=0; i<source_size; i++){
+        add_line(source.get_line(i));
+    }
+}
 Ini_section::~Ini_section() {
     for(auto itr=entries.begin(); itr!=entries.end(); itr ++){
         delete (*itr);  //the section owns the entries
@@ -16,36 +22,11 @@ Ini_section::~Ini_section() {
 
 }
 
-
-std::list<Ini_entry*>::iterator Ini_section::search(int pos) {
-    if (pos<0){
-        std::cout << "Error: negative index, if adding it will be placed at the end" << std::endl;
-        return entries.end();
-    }
-    auto itr=entries.begin();
-    for(; pos>0&&itr!=entries.end(); itr ++, pos--);  /* finding iterator to required position,
-                                                       * using pos as local variable
-                                                       */
-    return itr;
-}
-
-std::list<Ini_entry*>::iterator Ini_section::search(std::string name) {
-    auto itr=entries.begin();                                          /* can't initialize inside for:
-                                                                        * i need it later to be used only once
-                                                                        */
-    for (; itr!=entries.end(); itr++){
-        if((*itr)->get_name()==name)
-            return itr;
-    }
-    return itr;
-
-}
-
 bool Ini_section::exists(std::string name){
     return (search(name)!=entries.end());
 }
 
-void Ini_section::add_line(Ini_entry & line) {
+void Ini_section::add_line(const Ini_entry & line) {
     Ini_entry* ptr=new Ini_entry(line);
     entries.push_back(ptr);
 
@@ -98,7 +79,7 @@ void Ini_section::remove_line(std::string name) {
     }
 }
 
-Ini_entry Ini_section::get_line(int pos) {
+Ini_entry Ini_section::get_line(unsigned long int pos)const{
     auto itr=entries.begin();                         //can't initialize in for: i need it later to be used only once
     for(; pos>0&&itr!=entries.end(); itr ++, pos--);  /* finding iterator to required position,
                                                        * using pos as local variable
@@ -111,7 +92,7 @@ Ini_entry Ini_section::get_line(int pos) {
     }
 }
 
-Ini_entry Ini_section::get_line(std::string name) {
+Ini_entry Ini_section::get_line(std::string name)const{
     auto itr=search(name);
     if (itr==entries.end()){
         std::cout << "warning: line requested does not exists, returning dummy" << std::endl;
@@ -121,7 +102,7 @@ Ini_entry Ini_section::get_line(std::string name) {
     }
 }
 
-std::string Ini_section::read(){
+std::string Ini_section::read()const{
     std::string tmp="";
     for (auto itr=entries.begin(); itr!=entries.end(); itr ++) {
         tmp += (*itr)->read()+"\n";
@@ -129,7 +110,7 @@ std::string Ini_section::read(){
     return tmp;
 }
 
-std::string Ini_section::read_line(int pos) {
+std::string Ini_section::read_line(int pos)const{
     auto itr=search(pos);
     if(itr==entries.end()){
         std::cout << "Warning: requested line does not exists" << std::endl;
@@ -138,7 +119,7 @@ std::string Ini_section::read_line(int pos) {
     return (*itr)->read();
 }
 
-std::string Ini_section::read_line(std::string name) {
+std::string Ini_section::read_line(std::string name)const{
     auto itr=search(name);
     if(itr==entries.end()){
         std::cout << "Warning: requested line does not exists" << std::endl;
@@ -184,13 +165,36 @@ void Ini_section::set_line_type(std::string name, enum entry_type typ, std::stri
     }
 }
 
-unsigned long int Ini_section::get_length() {
+unsigned long int Ini_section::get_length()const{
     return entries.size();
 }
 
-std::string Ini_section::get_name() {
+std::string Ini_section::get_name()const{
     return name;
 }
 
 
 
+std::list<Ini_entry*>::const_iterator Ini_section::search(int pos)const{
+    if (pos<0){
+        std::cout << "Error: negative index, if adding it will be placed at the end" << std::endl;
+        return entries.end();
+    }
+    auto itr=entries.begin();
+    for(; pos>0&&itr!=entries.end(); itr ++, pos--);  /* finding iterator to required position,
+                                                       * using pos as local variable
+                                                       */
+    return itr;
+}
+
+std::list<Ini_entry*>::const_iterator Ini_section::search(std::string name)const{
+    auto itr=entries.begin();                                          /* can't initialize inside for:
+                                                                        * i need it later to be used only once
+                                                                        */
+    for (; itr!=entries.end(); itr++){
+        if((*itr)->get_name()==name)
+            return itr;
+    }
+    return itr;
+
+}
