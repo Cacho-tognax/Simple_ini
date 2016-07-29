@@ -9,8 +9,8 @@ Ini_section::Ini_section(std::string name): name(name) {
 }
 
 Ini_section::Ini_section(const Ini_section &source): name(source.get_name()){
-    unsigned long int source_size=source.get_length();
-    for(unsigned long int i=0; i<source_size; i++){
+    int source_size= static_cast<int>(source.get_length());
+    for(int i=0; i<source_size; i++){
         add_line(source.get_line(i));
     }
 }
@@ -26,23 +26,7 @@ bool Ini_section::exists(std::string name){
     return (search(name)!=entries.end());
 }
 
-void Ini_section::add_line(const Ini_entry & line) {
-    Ini_entry* ptr=new Ini_entry(line);
-    entries.push_back(ptr);
-
-}
-
-void Ini_section::add_line(enum entry_type ty, std::string name, std::string value){
-    Ini_entry* ptr=new Ini_entry(ty, name, value);
-    entries.push_back(ptr);
-}
-
-void Ini_section::add_line(std::string entry){
-    Ini_entry* ptr=new Ini_entry(entry);
-    entries.push_back(ptr);
-}
-
-void Ini_section::add_line(Ini_entry & line, int pos) {
+void Ini_section::add_line(const Ini_entry & line, int pos) {
     Ini_entry* ptr=new Ini_entry(line);
     auto itr=search(pos);
     entries.insert(itr, ptr);
@@ -50,15 +34,23 @@ void Ini_section::add_line(Ini_entry & line, int pos) {
 }
 
 void Ini_section::add_line(enum entry_type ty, std::string name, std::string value, int pos){
-    Ini_entry* ptr=new Ini_entry(ty, name, value);
-    auto itr=search(pos);
-    entries.insert(itr, ptr);
+    try {
+        Ini_entry *ptr = new Ini_entry(ty, name, value);
+        auto itr = search(pos);
+        entries.insert(itr, ptr);
+    }catch(Invalid_entry_exception){
+        std::cout << "invalid entry" << std::endl;
+    }
 }
 
-void Ini_section::add_line(std::string entry, int pos){
-    Ini_entry* ptr=new Ini_entry(entry);
-    auto itr=search(pos);
-    entries.insert(itr, ptr);
+void Ini_section::add_line(const std::string &entry, int pos){
+    try {
+        Ini_entry *ptr = new Ini_entry(entry);
+        auto itr = search(pos);
+        entries.insert(itr, ptr);
+    }catch(Invalid_entry_exception){
+        std::cout << "invalid entry" << std::endl;
+    }
 }
 
 void Ini_section::remove_line(int pos) {
@@ -66,6 +58,7 @@ void Ini_section::remove_line(int pos) {
     if (itr==entries.end()){
         std::cout << "warning: line requested to remove does not exists" << std::endl;
     } else{
+        delete (*itr);
         entries.erase(itr);
     }
 }
@@ -75,11 +68,16 @@ void Ini_section::remove_line(std::string name) {
     if (itr==entries.end()){
         std::cout << "warning: line requested to remove does not exists" << std::endl;
     } else{
+        delete (*itr);
         entries.erase(itr);
     }
 }
 
-Ini_entry Ini_section::get_line(unsigned long int pos)const{
+Ini_entry Ini_section::get_line(int pos)const{
+    if(pos<0){
+        std::cout << "Warning: negative index, returning dummy" << std::endl;
+        return Ini_entry(comment, "Error: line does not exists", "");
+    }
     auto itr=entries.begin();                         //can't initialize in for: i need it later to be used only once
     for(; pos>0&&itr!=entries.end(); itr ++, pos--);  /* finding iterator to required position,
                                                        * using pos as local variable
@@ -177,6 +175,8 @@ std::string Ini_section::get_name()const{
 
 std::list<Ini_entry*>::const_iterator Ini_section::search(int pos)const{
     if (pos<0){
+        if(pos==entries_end)
+            return entries.end();
         std::cout << "Error: negative index, if adding it will be placed at the end" << std::endl;
         return entries.end();
     }

@@ -47,7 +47,6 @@ void Ini_manager::open_file(std::string file_name) {
 
 void Ini_manager::save() {
     if(i_file.is_open()) {
-        i_file.close();          //to have it opened by only 1 fstream object
         o_file.open(file_name);
         if (o_file.is_open()) {
             o_file << read();
@@ -65,13 +64,10 @@ void Ini_manager::save() {
 void Ini_manager::save_as(std::string new_file_name){
     if(i_file.is_open()) {
         o_file.open(new_file_name);
-        if (o_file.is_open()) {
-            o_file << read();
-            o_file.flush();
-            o_file.close();
-            i_file.close();
+        if (o_file.is_open()) {     //making sure new file is writeable
+            o_file.close();         //letting save to open it
             file_name=new_file_name;
-            i_file.open(new_file_name);
+            save();
         } else {
             std::cout << "error: file not writable" << std::endl;
         }
@@ -93,54 +89,117 @@ void Ini_manager::close_file() {
     }
 }
 
-void Ini_manager::add_line(std::string &line) {
-
+void Ini_manager::add_line(const Ini_entry &entry, std::string section) {
+    auto itr=section_search(section);
+    if (section=="")
+        itr=content.begin();
+    if(itr==content.end()) {
+        std::cout << "Error: no such section found" << std::endl;
+    }else {
+        (*itr)->add_line(entry);
+    }
 }
 
-void Ini_manager::add_line(std::string &line, int pos) {
-
+void Ini_manager::add_line(const Ini_entry &entry, int pos, std::string section) {
+    auto itr=section_search(section);
+    if (section=="")
+        itr=content.begin();
+    if(itr==content.end()) {
+        std::cout << "Error: no such section found" << std::endl;
+    }else {
+        (*itr)->add_line(entry, pos);
+    }
 }
 
-void Ini_manager::add_line(std::string section, std::string &line) {
-
+void Ini_manager::add_line(const std::string &entry, std::string section) {
+    try {
+        Ini_entry tmp(entry);
+        add_line(tmp, section);
+    }
+    catch (Invalid_entry_exception){
+        std::cout << "Invalid entry" << std::endl;
+    }
 }
 
-void Ini_manager::add_line(std::string section, std::string &line, int pos) {
-
+void Ini_manager::add_line(const std::string &entry, int pos, std::string section) {
+    try {
+        Ini_entry tmp(entry);
+        add_line(tmp, pos, section);
+    }
+    catch (Invalid_entry_exception){
+        std::cout << "Invalid entry" << std::endl;
+    }
 }
 
-void Ini_manager::add_line(enum entry_type ty, std::string name, std::string value) {
-
+void Ini_manager::add_line(enum entry_type ty, std::string name, std::string value, std::string section) {
+    try{
+        Ini_entry tmp(ty, name, value);
+        add_line(tmp, section);
+    }catch (Invalid_entry_exception){
+        std::cout << "Invalid entry" << std::endl;
+    }
 }
 
-void Ini_manager::add_line(enum entry_type ty, std::string name, std::string value, int pos) {
-
+void Ini_manager::add_line(enum entry_type ty, std::string name, std::string value, int pos, std::string section) {
+    try{
+        Ini_entry tmp(ty, name, value);
+        add_line(tmp, pos, section);
+    }catch (Invalid_entry_exception){
+        std::cout << "Invalid entry" << std::endl;
+    }
 }
 
-void Ini_manager::add_line(std::string section, enum entry_type ty, std::string name, std::string value) {
-
+void Ini_manager::remove_line(int pos, std::string section) {
+    auto itr=section_search(section);
+    if (section=="")
+        itr=content.begin();
+    if(itr==content.end()){
+        std::cout << "Error: no such section found" << std::endl;
+    }else{
+        (*itr)->remove_line(pos);
+    }
 }
 
-void Ini_manager::add_line(std::string section, enum entry_type ty, std::string name, std::string value, int pos) {
-
+void Ini_manager::remove_line(std::string name, std::string section) {
+    auto itr=section_search(section);
+    if (section=="")
+        itr=content.begin();
+    if(itr==content.end()){
+        std::cout << "Error: no such section found" << std::endl;
+    }else{
+        (*itr)->remove_line(name);
+    }
 }
 
-void Ini_manager::remove_line(std::string section, int pos) {
 
+
+void Ini_manager::remove_any_line(int pos) {
+    auto itr= search(pos);
+    if(itr==content.end()){
+        std::cout << "no such line exists in any section" << std::endl;
+    }else{
+        (*itr)->remove_line(pos);
+    }
 }
 
-void Ini_manager::remove_line(std::string section, std::string name) {
-
+void Ini_manager::remove_any_line(std::string name) {
+    auto itr= search(name);
+    if(itr==content.end()){
+        std::cout << "no such line exists in any section" << std::endl;
+    }else{
+        (*itr)->remove_line(name);
+    }
 }
+
 
 void Ini_manager::add_section(std::string name, int pos) {
     auto itr=section_search(pos);
     content.insert(itr, new Ini_section(name));
 }
 
-void Ini_manager::add_section(Ini_section * section, int pos){
-    auto itr=section_search(pos);
-    content.insert(itr, section);
+void Ini_manager::add_section(const Ini_section &section, int pos){
+    auto itr=section_search(pos+1);     //the unsectioned section must be invisible to this method
+    content.insert(itr, new Ini_section(section));
 }
 
 void Ini_manager::remove_section(std::string name) {
@@ -163,7 +222,11 @@ void Ini_manager::remove_section(int pos) {
         std::cout << "Error: no such section found" << std::endl;
     }else{
         delete (*itr);
-        content.erase(itr);
+        if(itr!=content.begin()) {  //as above
+            content.erase(itr);
+        }else{
+            content.front()=(new Ini_section("unsectioned"));
+        }
     }
 }
 

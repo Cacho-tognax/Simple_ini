@@ -77,3 +77,20 @@ TEST_F(section_fixture_test, testing_exists){
     ASSERT_EQ(testing.exists("not present"), false);
 
 }
+TEST_F(section_fixture_test, testing_copy_constructor){
+    Ini_section copied(testing);
+    testing.remove_line("DOG");
+    testing.set_line(1, "FALSE");       //modifications to the original should not change copy
+    copied.set_line_type("ANSWER", bool_entry, "TRUE");
+    std::string expected="!a comment\n"
+            "CAT = FALSE\n"
+            "ANSWER = 42\n"
+            "NAME = \"MARVIN\"\n";
+    ASSERT_EQ(testing.read(), expected);  //and vice versa
+    std::string copy_expected="!a comment\n"
+            "CAT = TRUE\n"
+            "DOG = 7\n"
+            "ANSWER = TRUE\n"
+            "NAME = \"MARVIN\"\n";
+    ASSERT_EQ(copied.read(), copy_expected);
+}

@@ -44,6 +44,11 @@ public:
         if (type==comment){
             this->value="";
         } else{
+            if (type==string_entry) {  // removing the ""
+                this->value.erase(this->value.begin());
+                this->value.erase(--this->value.end());
+            }
+
             std::string tmp= name + " = " + value;
             if(identify(tmp)!=type){
                 throw Invalid_entry_exception(tmp);

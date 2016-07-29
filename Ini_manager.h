@@ -12,15 +12,14 @@
 
 #include "Ini_section.h"
 
-const int max_line_size=50;
-const int end_content= -89; //just a random number, recognized by search:
+const int end_content= -89;  //just a random number, recognized by search:
                              // it wil give the pointer content.end() without error messages
 
 class Ini_manager {
 public:
     Ini_manager();
     Ini_manager(std::string file_name);
-    ~Ini_manager();
+    virtual ~Ini_manager();
 
     void open_file(std::string file_name);
     void save();
@@ -28,21 +27,18 @@ public:
     void close_file();
 
 
-    void add_line(std::string & line);
-    void add_line(std::string & line, int pos);                   /* will add it before the first section
-                                                                   * if pos out of bounds, will add right above the
-                                                                   * first section
-                                                                   */
-    void add_line(std::string section, std::string & line);
-    void add_line(std::string section, std::string & line, int pos);         //as above
-    void add_line(enum entry_type ty, std::string name, std::string value);
-    void add_line(enum entry_type ty, std::string name, std::string value, int pos);
-    void add_line(std::string section, enum entry_type ty, std::string name, std::string value);
-    void add_line(std::string section, enum entry_type ty, std::string name, std::string value, int pos);
-    void remove_line(std::string section, int pos);
-    void remove_line(std::string section, std::string name);
+    void add_line(const Ini_entry &entry, std::string section="");
+    void add_line(const Ini_entry &entry, int pos, std::string section="");
+    void add_line(const std::string &entry, std::string section="");
+    void add_line(const std::string &entry, int pos, std::string section="");
+    void add_line(enum entry_type ty, std::string name, std::string value, std::string section="");
+    void add_line(enum entry_type ty, std::string name, std::string value, int pos, std::string section="");
+    void remove_line(int pos, std::string section = "");
+    void remove_line(std::string name, std::string section = "");
+    void remove_any_line(int pos);
+    void remove_any_line(std::string name);
     void add_section(std::string name, int pos=end_content);
-    void add_section(Ini_section * section, int pos=end_content); //section must have been allocated dynamicaly
+    void add_section(const Ini_section &section, int pos=end_content);
     void remove_section(std::string name);
     void remove_section(int pos=end_content);
     Ini_entry get_line(int pos, std::string section = "")const;

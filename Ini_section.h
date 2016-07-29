@@ -11,6 +11,8 @@
 
 #include "Ini_entry.h"
 
+const int entries_end=-122;   //just a random number, recognized by search:
+                             //it wil give the pointer entries.end() without error messages
 
 class Ini_section {
 public:
@@ -20,19 +22,12 @@ public:
 
     bool exists(std::string name);
 
-    void add_line(const Ini_entry & line);
-    void add_line(enum entry_type ty, std::string name, std::string value);
-    void add_line(std::string entry);                                    /* with no specified position it places it
-                                                                          * at the end of the section
-                                                                          */
-    void add_line(Ini_entry & line, int pos);                            /* if pos out of bounds,
-                                                                          *will ad at end of section
-                                                                          */
-    void add_line(enum entry_type ty, std::string name, std::string value, int pos);
-    void add_line(std::string entry, int pos);
+    void add_line(const Ini_entry & line, int pos=entries_end);
+    void add_line(enum entry_type ty, std::string name, std::string value, int pos=entries_end);
+    void add_line(const std::string &entry, int pos=entries_end);
     void remove_line(int pos);
     void remove_line(std::string name);
-    Ini_entry get_line(unsigned long int pos)const;
+    Ini_entry get_line(int pos)const;
     Ini_entry get_line(std::string name)const;
     std::string read()const;
     std::string read_line(int pos)const;

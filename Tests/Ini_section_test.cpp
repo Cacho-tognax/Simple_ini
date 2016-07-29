@@ -24,6 +24,8 @@ TEST(Ini_section_test, Test_add_and_get){
     testing.add_line(bool_entry, "1", "TRUE", 4);
     Ini_entry ordered_string("4=5");
     testing.add_line("4=5", 4);
+    testing.add_line(bool_entry, "invalid", "");
+    testing.add_line("invalid");
 
     Ini_entry dummy(comment, "Error: line does not exists", "");
 
