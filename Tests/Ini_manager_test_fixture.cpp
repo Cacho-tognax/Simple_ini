@@ -45,7 +45,7 @@ TEST_F(Testing_manager, Open_and_read_test) {
     ASSERT_EQ(testing.read_any_line("not present"), "not found");
 }
 
-TEST_F(Testing_manager, Get_test){
+TEST_F(Testing_manager, Get_entry_and_lenght_test){
 
     ASSERT_EQ(testing.get_line(2, ""), Ini_entry("F = 1.1"));
     ASSERT_EQ(testing.get_line(2), Ini_entry("F = 1.1"));
@@ -61,6 +61,7 @@ TEST_F(Testing_manager, Get_test){
     ASSERT_EQ(testing.get_any_line("an added entry"), Ini_entry("an added entry = 1"));
     ASSERT_EQ(testing.get_any_line("CAT"), Ini_entry("CAT = TRUE"));
     ASSERT_EQ(testing.get_any_line("not present"), Ini_entry(comment, "Error: line does not exists", ""));
+    ASSERT_EQ(testing.get_length(), 3);
 }
 
 TEST_F(Testing_manager, Set_test){
@@ -141,6 +142,18 @@ TEST_F(Testing_manager, Add_section_test){
                     "an added entry = 1\n"
                     "[defined here]\n";
     ASSERT_EQ(testing.read(), testini);
+}
+
+TEST_F(Testing_manager, Get_section_test){
+    Ini_section first("section head with entries");
+    first.add_line("Pi = 3.14");
+    first.add_line("Internet = \"cats\"");
+    Ini_section second("added section");
+    second.add_line("an added entry = 1");
+    ASSERT_EQ(first, testing.get_section(0));
+    ASSERT_EQ(second, testing.get_section(1));
+    ASSERT_EQ(first, testing.get_section("section head with entries"));
+    ASSERT_EQ(second, testing.get_section("added section"));
 }
 
 TEST_F(Testing_manager, Remove_entry_test){

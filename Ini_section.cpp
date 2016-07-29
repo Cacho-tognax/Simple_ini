@@ -22,6 +22,20 @@ Ini_section::~Ini_section() {
 
 }
 
+bool Ini_section::operator==(const Ini_section &lhs)const{
+    if(name!=lhs.get_name())
+        return false;
+    if(get_length()!=lhs.get_length())
+        return false;
+    int length= static_cast<int>(get_length());
+    for(int i=0; i<length; i++){
+        if(!(get_line(i)==lhs.get_line(i)))
+            return false;
+    }
+    return true;
+}
+
+
 bool Ini_section::exists(std::string name){
     return (search(name)!=entries.end());
 }

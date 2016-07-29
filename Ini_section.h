@@ -20,6 +20,8 @@ public:
     Ini_section(const Ini_section &source);
     virtual ~Ini_section();
 
+    bool operator==(const Ini_section &lhs)const;
+
     bool exists(std::string name);
 
     void add_line(const Ini_entry & line, int pos=entries_end);
@@ -44,10 +46,10 @@ public:
 private:
 
     Ini_section operator =(const Ini_section &rhs){
-
+        return Ini_section("you shouldn't be seeing this");
     }
     Ini_section operator =(const Ini_section &&rhs){
-
+        return Ini_section("you shouldn't be seeing this");
     }
 
     std::list<Ini_entry*>::const_iterator search(int pos)const;

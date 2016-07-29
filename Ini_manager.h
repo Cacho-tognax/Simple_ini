@@ -21,6 +21,8 @@ public:
     Ini_manager(std::string file_name);
     virtual ~Ini_manager();
 
+    unsigned long int get_length()const;
+
     void open_file(std::string file_name);
     void save();
     void save_as(std::string new_file_name);   //after savig as the class will link to the new file
@@ -39,6 +41,8 @@ public:
     void remove_any_line(std::string name);
     void add_section(std::string name, int pos=end_content);
     void add_section(const Ini_section &section, int pos=end_content);
+    Ini_section get_section(int pos)const;
+    Ini_section get_section(std::string name)const;
     void remove_section(std::string name);
     void remove_section(int pos=end_content);
     Ini_entry get_line(int pos, std::string section = "")const;
@@ -57,6 +61,16 @@ public:
 
 
 private:
+
+    Ini_manager operator =(const Ini_manager &rhs){
+        return Ini_manager("you shouldn't be seeing this");
+    }
+    Ini_manager operator =(const Ini_manager &&rhs){
+        return Ini_manager("you shouldn't be seeing this");
+    }
+    Ini_manager(const Ini_manager & source){
+
+    }
 
     std::list<Ini_section*>::const_iterator search(int &pos)const;       /* will return the section with that position and
                                                                     * modify pos to the relative position in the section

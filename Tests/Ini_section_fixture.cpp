@@ -77,6 +77,7 @@ TEST_F(section_fixture_test, testing_exists){
     ASSERT_EQ(testing.exists("not present"), false);
 
 }
+
 TEST_F(section_fixture_test, testing_copy_constructor){
     Ini_section copied(testing);
     testing.remove_line("DOG");
@@ -93,4 +94,13 @@ TEST_F(section_fixture_test, testing_copy_constructor){
             "ANSWER = TRUE\n"
             "NAME = \"MARVIN\"\n";
     ASSERT_EQ(copied.read(), copy_expected);
+}
+
+TEST_F(section_fixture_test, testing_identity_operator){
+    Ini_section copy(testing);
+    ASSERT_EQ(copy, testing);
+    testing.remove_line(0);
+    ASSERT_EQ(!(copy==testing), true);
+    copy.remove_line(0);
+    ASSERT_EQ(copy, testing);
 }

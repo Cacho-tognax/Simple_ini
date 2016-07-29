@@ -50,3 +50,13 @@ TEST(In_entry, methds_test) {
     ASSERT_EQ(tmp.get_type(), int_entry);
     ASSERT_EQ(tmp.get_value(), "7");
 }
+
+TEST(In_entry, Identity_operator_test) {
+    Ini_entry tmp("false=TRUE");
+    Ini_entry copy(tmp);
+    ASSERT_EQ(tmp, copy);
+    tmp.change_type(int_entry, "7");
+    ASSERT_EQ(!(tmp==copy), true);
+    copy.change_type(int_entry, "7");
+    ASSERT_EQ(tmp, copy);
+}

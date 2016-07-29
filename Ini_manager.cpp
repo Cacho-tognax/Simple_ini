@@ -12,6 +12,10 @@ Ini_manager::Ini_manager(std::string file_name) {
     open_file(file_name);
 }
 
+unsigned long int Ini_manager::get_length()const{
+    return static_cast<int>(content.size());
+}
+
 Ini_manager::~Ini_manager() {
     close_file();
 }
@@ -200,6 +204,25 @@ void Ini_manager::add_section(std::string name, int pos) {
 void Ini_manager::add_section(const Ini_section &section, int pos){
     auto itr=section_search(pos+1);     //the unsectioned section must be invisible to this method
     content.insert(itr, new Ini_section(section));
+}
+
+Ini_section Ini_manager::get_section(int pos)const{
+    auto itr=section_search(pos+1);    //as above
+    if (itr!=content.end()){
+        return *(*itr);
+    }else {
+        std::cout << "Warning:section not found, returning dummy" << std::endl;
+        return Ini_section("section not found");
+    }
+}
+Ini_section Ini_manager::get_section(std::string name)const{
+    auto itr=section_search(name);
+    if (itr!=content.end()){
+        return *(*itr);
+    }else {
+        std::cout << "Warning:section not found, returning dummy" << std::endl;
+        return Ini_section("section not found");
+    }
 }
 
 void Ini_manager::remove_section(std::string name) {
