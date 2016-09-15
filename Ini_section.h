@@ -11,7 +11,7 @@
 
 #include "Ini_entry.h"
 
-const int entries_end=-122;   //just a random number, recognized by search:
+const int entries_end=-1;   //just a random number, recognized by search:
                              //it wil give the pointer entries.end() without error messages
 
 class Ini_section {

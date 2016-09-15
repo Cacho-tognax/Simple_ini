@@ -5,29 +5,12 @@
 #ifndef SIMPLE_INI_INI_ENTRY_H
 #define SIMPLE_INI_INI_ENTRY_H
 
+#include <vector>
 #include <string>
 #include <iostream>
+#include <stdexcept>
 
 #include "Invalid_entry_exception.h"
-
-const char space=32;
-const char exclamation_mark=33;
-const char double_quotation_mark=34;
-const char minus_sign=45;
-const char dot=46;
-const char numbers_start=48;
-const char numbers_end=57;
-const char equal_sign=61;
-const char A_letter=65;
-const char E_letter=69;
-const char F_letter=70;
-const char L_letter=76;
-const char R_letter=82;
-const char S_letter=83;
-const char T_letter=84;
-const char U_letter=85;
-const char open_square_parenthesis=91;
-const char close_square_parenthesis=93;
 
 
 enum entry_type { comment, section_head, bool_entry, int_entry,
@@ -45,6 +28,10 @@ public:
             this->value="";
         } else{
             if (type==string_entry) {  // removing the ""
+                if(this->value.size()<3){      //to avoid segmentation faults
+                    std::string tmp= name + " = " + value;
+                    throw Invalid_entry_exception(tmp);
+                }
                 this->value.erase(this->value.begin());
                 this->value.erase(--this->value.end());
             }
@@ -63,6 +50,7 @@ public:
     void set(enum entry_type ty, std::string name, std::string value) throw(Invalid_entry_exception);
 
     std::string read() const;
+    static enum entry_type identify(std::string entry, std::vector<std::string>& parts);
     static enum entry_type identify(std::string entry);
 
     bool operator ==(const Ini_entry rhs) const{
@@ -71,7 +59,7 @@ public:
         if(value!= rhs.get_value())
             return false;
         if(type!= rhs.get_type())
-            return false;
+            return false;  //todo ordine megio
         return true;
     }
 
@@ -118,7 +106,7 @@ public:
                 std::cout << "new value type and current type are not equal" << std::endl;
             }
         }else{
-            std::cout << "can't change comment value!" << std::endl;
+            std::cout << "can't change comment value!" << std::endl;  //todo cambialo in eccezioni
         }
     }
 

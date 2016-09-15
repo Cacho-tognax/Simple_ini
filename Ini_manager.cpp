@@ -50,28 +50,16 @@ void Ini_manager::open_file(std::string file_name) {
 
 
 void Ini_manager::save() {
-    if(i_file.is_open()) {
-        o_file.open(file_name);
-        if (o_file.is_open()) {
-            o_file << read();
-            o_file.flush();
-            o_file.close();
-        } else {
-            std::cout << "error: file not writable" << std::endl;
-        }
-        i_file.open(file_name);
-    }else{
-        std::cout << "error: no file to save!" << std::endl;
-    }
+    save_as(file_name);
 }
 
 void Ini_manager::save_as(std::string new_file_name){
     if(i_file.is_open()) {
         o_file.open(new_file_name);
         if (o_file.is_open()) {     //making sure new file is writeable
-            o_file.close();         //letting save to open it
-            file_name=new_file_name;
-            save();
+            o_file << read();
+            o_file.flush();
+            o_file.close();
         } else {
             std::cout << "error: file not writable" << std::endl;
         }

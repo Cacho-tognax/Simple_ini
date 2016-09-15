@@ -4,48 +4,27 @@
 
 #include"Ini_entry.h"
 
-
-
-
 Ini_entry::Ini_entry(std::string entry) throw(Invalid_entry_exception){
     set(entry);
 }
 
 void Ini_entry::set(std::string entry) throw(Invalid_entry_exception){
-    type=identify(entry);
+    std::vector<std::string> parts;
+    type=identify(entry, parts);
     if (type==to_ignore||type==section_head){
         throw Invalid_entry_exception(entry);
     }
-    std::string tmp="";
-    auto itr=entry.begin();
-    if (type==comment){
-        itr++;
-        for(; itr!=entry.end(); itr++)
-            tmp+=(*itr);
-        name=tmp;
-        value="";
-    } else {
-        for (; (*itr) != equal_sign; itr++)
-            tmp += (*itr);
-        for (auto enditr = --tmp.end(); (*enditr)==space; enditr--) //removing spaces
-            tmp.erase(enditr);
-        name=tmp;
-        tmp="";
-        itr++;
-        for(; (*itr)==space||(*itr)==equal_sign; itr++); //finding the end of the spaces
-        if (type==string_entry){
-            itr++;                                     //removing the ""
-            for(; itr!=entry.end()&&(*itr)!=double_quotation_mark; itr++){
-                tmp+=(*itr);
-            }
-        } else {
-            for(; itr!=entry.end(); itr++){
-                tmp+=(*itr);
-            }
+    name=parts[0];
+    if (type!=comment){  // if not a comment value must be added to
+        if(type!=string_entry) {
+            value = parts[1];
+        } else{
+            std::string tmp = parts[1];
+            tmp.erase(tmp.begin());
+            tmp.erase(--tmp.end());   //removing the ""
+            value = tmp;
         }
-        value=tmp;
     }
-
 }
 
 void Ini_entry::set(enum entry_type ty, std::string name, std::string value) throw(Invalid_entry_exception){
@@ -79,124 +58,68 @@ std::string Ini_entry::read() const{
 
 }
 
-enum entry_type Ini_entry::identify(std::string entry) {
-    auto itr = entry.begin();
-    if (itr == entry.end())
-        return to_ignore;
-    char tmp = (*itr);
-    if (tmp == exclamation_mark) {
-        return comment;
-    } else if (tmp == open_square_parenthesis) {    //must find closing or it's an ignored typo
-        for (; itr != entry.end(); itr++) {
-            if ((*itr) == close_square_parenthesis) {
-                itr++;
-                if (itr == entry.end())
-                    return section_head;
-            }
-        }
-        return to_ignore;
-    } else {                         //attempting to understand entry type
-        bool has_name=false;
-        for (; (*itr) != equal_sign && itr != entry.end(); itr++) {   //finding end of entry name
-            if ((*itr)!=space)
-                has_name=true;
-        }
-        if(!has_name)
-            return to_ignore;                         //name made only of spaces
-        if (itr == entry.end())
-            return to_ignore;          //invalid line, won't appear after saving
-        itr++;
-        if (itr == entry.end())
-            return to_ignore;          //as above
-        for (; (*itr) == space && itr != entry.end(); itr++);
-        if (itr == entry.end())
-            return to_ignore;
-        tmp = (*itr);
-        if ((numbers_start <= tmp && tmp <= numbers_end) || (tmp==minus_sign)){     /* it's either an int or a float,
-                                                                   * attempting to identify, if a non number is found
-                                                                   * the line will be ignored
-                                                                   */
-            if (tmp==minus_sign){
-                itr++;
-                if(itr==entry.end())    //only a minus without a number
-                    return to_ignore;
-            }
-            for (; itr != entry.end(); itr++) {
-                tmp = (*itr);
-                if ((tmp < numbers_start || tmp > numbers_end) && tmp != dot)
-                    return to_ignore;       // non-number found
-                if (tmp == dot) {
-                    itr++;
-                    for (; itr != entry.end(); itr++) {
-                        tmp = (*itr);
-                        if (tmp < numbers_start || numbers_end < tmp)
-                            return to_ignore;
-                    }
-                    return float_entry;
-                }
-            }
-            return int_entry;
-        } else if (tmp == T_letter) {                        //it's bool or a typo?
-            itr++;
-            if (itr == entry.end())
-                return to_ignore;                      //better safe than sorry!
-            if (*itr == R_letter) {
-                itr++;
-                if (itr == entry.end())
-                    return to_ignore;
-                if (*itr == U_letter) {
-                    itr++;
-                    if (itr == entry.end())
-                        return to_ignore;
-                    if (*itr == E_letter) {
-                        itr++;
-                        if (itr == entry.end())
-                            return bool_entry;
-                        return to_ignore;
-                    }
-                }
-            }
-            return to_ignore;
-        } else if (tmp == F_letter) {                        //same for false
-            itr++;
-            if (itr == entry.end())
-                return to_ignore;
-            if (*itr == A_letter) {
-                itr++;
-                if (itr == entry.end())
-                    return to_ignore;
-                if (*itr == L_letter) {
-                    itr++;
-                    if (itr == entry.end())
-                        return to_ignore;
-                    if (*itr == S_letter) {
-                        itr++;
-                        if (itr == entry.end())
-                            return to_ignore;
-                        if (*itr == E_letter) {
-                            itr++;
-                            if (itr == entry.end())
-                                return bool_entry;
-                            return to_ignore;
-                        }
-                    }
-                }
-            }
-            return to_ignore;
-        } else if (tmp == double_quotation_mark) {    //must find closing or it's an ignored typo
-            for (; itr != entry.end(); itr++) {
-                if ((*itr) == double_quotation_mark) {
-                    itr++;
-                    if (itr == entry.end())
-                        return string_entry;
-                }
-            }
-            return to_ignore;
-        } else {
-            return to_ignore;
+enum entry_type Ini_entry::identify(std::string entry, std::vector<std::string>& parts) {
 
+
+    if (entry.size()==0)
+        return to_ignore;
+    char tmp = entry[0];
+    if (tmp == '!') {
+        parts.push_back(entry.substr(1, entry.size()-1));
+        return comment;
+    } else if (tmp == '[') {    //must find closing or it's an ignored typo
+        std::string::size_type the_char=entry.find_first_of("]", 1);
+        if(the_char == entry.size()-1) {
+            parts.push_back(entry.substr(1, entry.size() - 2));
+            return section_head;
         }
+        else
+            return to_ignore;
+    } else {                         //attempting to understand entry type
+        std::string::size_type the_char = entry.find_first_of("=", 0);
+        std::string tmp_string = entry.substr(0, the_char);
+        if(tmp_string.find_first_not_of(" ", 0)==std::string::npos)  //no non space found
+            return to_ignore; //no actual name
+        std::string::size_type the_char2 = tmp_string.find_last_of(" ", std::string::npos);
+        while(the_char2==tmp_string.size()-1){    //while we have a space at the end
+            tmp_string.erase(the_char2);
+            the_char2 = tmp_string.find_last_of(" ", std::string::npos);
+        }
+        parts.push_back(tmp_string);
+        the_char = entry.find_first_not_of(" ", the_char+1);
+        if(the_char==std::string::npos)
+            return to_ignore;
+        tmp_string=entry.substr(the_char);      //this is the value
+        parts.push_back(tmp_string);            //even if it is invalid
+        if(tmp_string.find_first_of("1234567890")!=std::string::npos && tmp_string.find_first_not_of("1234567890-.")==
+                                                                                std::string::npos) {
+            if (tmp_string[0] == '-')
+                the_char = tmp_string.find_first_not_of("1234567890", 1);
+            else
+                the_char = tmp_string.find_first_not_of("1234567890");
+            if (the_char == std::string::npos)
+                return int_entry;
+            if (tmp_string[the_char] == '.') {
+                the_char = tmp_string.find_first_not_of("1234567890", the_char+1);
+                if (the_char == std::string::npos)
+                    return float_entry;
+            }
+            return to_ignore;
+        }
+        if(tmp_string == "TRUE" || tmp_string == "FALSE")
+            return bool_entry;
+        if (tmp_string[0] == '"') {    //must find closing or it's an ignored typo
+            the_char = tmp_string.find_first_of("\"", 1);
+            if(the_char == tmp_string.size() - 1)     //the closing quotation mark must be the last char in the string
+                return string_entry;
+            }
+        return to_ignore;   //was none of the above
     }
+}
+
+enum entry_type Ini_entry::identify(std::string entry) {  //calls the previous one discarding the tokens
+    std::vector<std::string> parts;
+    return identify(entry, parts);
 }
 
 
