@@ -47,24 +47,16 @@ void Ini_section::add_line(const Ini_entry & line, int pos) {
 
 }
 
-void Ini_section::add_line(enum entry_type ty, std::string name, std::string value, int pos){
-    try {
+void Ini_section::add_line(enum entry_type ty, std::string name, std::string value, int pos) throw(std::invalid_argument){
         Ini_entry *ptr = new Ini_entry(ty, name, value);
         auto itr = search(pos);
         entries.insert(itr, ptr);
-    }catch(Invalid_entry_exception){
-        std::cout << "invalid entry" << std::endl;
-    }
 }
 
-void Ini_section::add_line(const std::string &entry, int pos){
-    try {
+void Ini_section::add_line(const std::string &entry, int pos) throw(std::invalid_argument){
         Ini_entry *ptr = new Ini_entry(entry);
         auto itr = search(pos);
         entries.insert(itr, ptr);
-    }catch(Invalid_entry_exception){
-        std::cout << "invalid entry" << std::endl;
-    }
 }
 
 void Ini_section::remove_line(int pos) {
@@ -140,7 +132,7 @@ std::string Ini_section::read_line(std::string name)const{
     return (*itr)->read();
 }
 
-void Ini_section::set_line(int pos, std::string value) {
+void Ini_section::set_line(int pos, std::string value) throw(std::invalid_argument){
     auto itr=search(pos);
     if(itr==entries.end()){
         std::cout << "Warning: requested line does not exists" << std::endl;
@@ -150,7 +142,7 @@ void Ini_section::set_line(int pos, std::string value) {
 
 }
 
-void Ini_section::set_line(std::string name, std::string value) {
+void Ini_section::set_line(std::string name, std::string value) throw(std::invalid_argument){
     auto itr=search(name);
     if(itr==entries.end()){
         std::cout << "Warning: requested line does not exists" << std::endl;
@@ -159,7 +151,7 @@ void Ini_section::set_line(std::string name, std::string value) {
     }
 }
 
-void Ini_section::set_line_type(int pos, enum entry_type typ, std::string value) {
+void Ini_section::set_line_type(int pos, enum entry_type typ, std::string value) throw(std::invalid_argument){
     auto itr=search(pos);
     if(itr==entries.end()){
         std::cout << "Warning: requested line does not exists" << std::endl;
@@ -168,7 +160,7 @@ void Ini_section::set_line_type(int pos, enum entry_type typ, std::string value)
     }
 }
 
-void Ini_section::set_line_type(std::string name, enum entry_type typ, std::string value){
+void Ini_section::set_line_type(std::string name, enum entry_type typ, std::string value) throw(std::invalid_argument){
     auto itr=search(name);
     if(itr==entries.end()){
         std::cout << "Warning: requested line does not exists" << std::endl;

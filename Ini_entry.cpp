@@ -4,15 +4,15 @@
 
 #include"Ini_entry.h"
 
-Ini_entry::Ini_entry(std::string entry) throw(Invalid_entry_exception){
+Ini_entry::Ini_entry(std::string entry) throw(std::invalid_argument){
     set(entry);
 }
 
-void Ini_entry::set(std::string entry) throw(Invalid_entry_exception){
+void Ini_entry::set(std::string entry) throw(std::invalid_argument){
     std::vector<std::string> parts;
     type=identify(entry, parts);
     if (type==to_ignore||type==section_head){
-        throw Invalid_entry_exception(entry);
+        throw std::invalid_argument(entry);
     }
     name=parts[0];
     if (type!=comment){  // if not a comment value must be added to
@@ -27,7 +27,7 @@ void Ini_entry::set(std::string entry) throw(Invalid_entry_exception){
     }
 }
 
-void Ini_entry::set(enum entry_type ty, std::string name, std::string value) throw(Invalid_entry_exception){
+void Ini_entry::set(enum entry_type ty, std::string name, std::string value) throw(std::invalid_argument){
     this->type=ty;
     if (type==comment){
         this->name=name;
@@ -35,7 +35,7 @@ void Ini_entry::set(enum entry_type ty, std::string name, std::string value) thr
     } else{
         std::string tmp= name + " = " + value;
         if(identify(tmp)!=type){
-            throw Invalid_entry_exception(tmp);
+            throw std::invalid_argument(tmp);
         }else{
             this->name=name;
             this->value=value;

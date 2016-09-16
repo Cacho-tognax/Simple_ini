@@ -26,11 +26,11 @@ TEST(Ini_entry, Constructor_test) {
     ASSERT_EQ(tmp5.get_type(), string_entry);
     ASSERT_EQ(tmp5.get_name(), "ANSWER");
     ASSERT_EQ(tmp5.get_value(), "42");
-    ASSERT_THROW(new Ini_entry("Not an entry"), Invalid_entry_exception);
-    ASSERT_THROW(new Ini_entry("[section head]"), Invalid_entry_exception);
-    ASSERT_THROW(new Ini_entry("Typo = \" no closing quotes"), Invalid_entry_exception);
-    ASSERT_THROW(tmp5.set("Not an entry"), Invalid_entry_exception);
-    ASSERT_THROW(tmp5.set(bool_entry, "Name", "wrong value"), Invalid_entry_exception);
+    ASSERT_THROW(new Ini_entry("Not an entry"), std::invalid_argument);
+    ASSERT_THROW(new Ini_entry("[section head]"), std::invalid_argument);
+    ASSERT_THROW(new Ini_entry("Typo = \" no closing quotes"), std::invalid_argument);
+    ASSERT_THROW(tmp5.set("Not an entry"), std::invalid_argument);
+    ASSERT_THROW(tmp5.set(bool_entry, "Name", "wrong value"), std::invalid_argument);
 
 }
 
@@ -40,11 +40,11 @@ TEST(In_entry, methds_test) {
     ASSERT_EQ(tmp.get_type(), bool_entry);
     ASSERT_EQ(tmp.get_name(), "a new name");
     ASSERT_EQ(tmp.get_value(), "TRUE");
-    tmp.set_value("this should be ignored");
+    ASSERT_THROW(tmp.set_value("this should be ignored"), std::invalid_argument);
     ASSERT_EQ(tmp.get_value(), "TRUE");
     tmp.set_value("FALSE");
     ASSERT_EQ(tmp.get_value(), "FALSE");
-    tmp.change_type(int_entry, "again this should be ignored");
+    ASSERT_THROW(tmp.change_type(int_entry, "again this should be ignored"), std::invalid_argument);
     ASSERT_EQ(tmp.get_value(), "FALSE");
     tmp.change_type(int_entry, "7");
     ASSERT_EQ(tmp.get_type(), int_entry);

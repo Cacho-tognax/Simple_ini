@@ -25,8 +25,8 @@ public:
     bool exists(std::string name);
 
     void add_line(const Ini_entry & line, int pos=entries_end);
-    void add_line(enum entry_type ty, std::string name, std::string value, int pos=entries_end);
-    void add_line(const std::string &entry, int pos=entries_end);
+    void add_line(enum entry_type ty, std::string name, std::string value, int pos=entries_end) throw(std::invalid_argument);
+    void add_line(const std::string &entry, int pos=entries_end) throw(std::invalid_argument);
     void remove_line(int pos);
     void remove_line(std::string name);
     Ini_entry get_line(int pos)const;
@@ -34,10 +34,10 @@ public:
     std::string read()const;
     std::string read_line(int pos)const;
     std::string read_line(std::string name)const;
-    void set_line(int pos, std::string value);
-    void set_line(std::string name, std::string value);
-    void set_line_type(int pos, enum entry_type typ, std::string value);
-    void set_line_type(std::string name, enum entry_type typ, std::string value);
+    void set_line(int pos, std::string value) throw(std::invalid_argument);
+    void set_line(std::string name, std::string value) throw(std::invalid_argument);
+    void set_line_type(int pos, enum entry_type typ, std::string value) throw(std::invalid_argument);
+    void set_line_type(std::string name, enum entry_type typ, std::string value) throw(std::invalid_argument);
 
     unsigned long int get_length()const;
     std::string get_name()const;

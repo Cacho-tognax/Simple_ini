@@ -108,7 +108,7 @@ void Ini_manager::add_line(const std::string &entry, std::string section) {
         Ini_entry tmp(entry);
         add_line(tmp, section);
     }
-    catch (Invalid_entry_exception){
+    catch (std::invalid_argument){
         std::cout << "Invalid entry" << std::endl;
     }
 }
@@ -118,7 +118,7 @@ void Ini_manager::add_line(const std::string &entry, int pos, std::string sectio
         Ini_entry tmp(entry);
         add_line(tmp, pos, section);
     }
-    catch (Invalid_entry_exception){
+    catch (std::invalid_argument){
         std::cout << "Invalid entry" << std::endl;
     }
 }
@@ -127,7 +127,7 @@ void Ini_manager::add_line(enum entry_type ty, std::string name, std::string val
     try{
         Ini_entry tmp(ty, name, value);
         add_line(tmp, section);
-    }catch (Invalid_entry_exception){
+    }catch (std::invalid_argument){
         std::cout << "Invalid entry" << std::endl;
     }
 }
@@ -136,7 +136,7 @@ void Ini_manager::add_line(enum entry_type ty, std::string name, std::string val
     try{
         Ini_entry tmp(ty, name, value);
         add_line(tmp, pos, section);
-    }catch (Invalid_entry_exception){
+    }catch (std::invalid_argument){
         std::cout << "Invalid entry" << std::endl;
     }
 }
@@ -351,7 +351,7 @@ std::string Ini_manager::read_any_line(std::string name)const{
 }
 
 
-void Ini_manager::set_line(int pos, std::string value, std::string section) {
+void Ini_manager::set_line(int pos, std::string value, std::string section) throw(std::invalid_argument){
     auto itr=section_search(section);
     if (section=="")
         itr=content.begin();
@@ -362,7 +362,7 @@ void Ini_manager::set_line(int pos, std::string value, std::string section) {
     }
 }
 
-void Ini_manager::set_line(std::string name, std::string value, std::string section) {
+void Ini_manager::set_line(std::string name, std::string value, std::string section) throw(std::invalid_argument){
     auto itr=section_search(section);
     if (section=="")
         itr=content.begin();
@@ -373,7 +373,7 @@ void Ini_manager::set_line(std::string name, std::string value, std::string sect
     }
 }
 
-void Ini_manager::set_any_line(int pos, std::string value) {
+void Ini_manager::set_any_line(int pos, std::string value) throw(std::invalid_argument){
     auto itr= search(pos);
     if(itr==content.end()){
         std::cout << "no such line exists in any section" << std::endl;
@@ -382,7 +382,7 @@ void Ini_manager::set_any_line(int pos, std::string value) {
     }
 }
 
-void Ini_manager::set_any_line(std::string name, std::string value) {
+void Ini_manager::set_any_line(std::string name, std::string value) throw(std::invalid_argument){
     auto itr= search(name);
     if(itr==content.end()){
         std::cout << "no such line exists in any section" << std::endl;

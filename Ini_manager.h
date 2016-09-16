@@ -54,10 +54,10 @@ public:
     std::string read_line(std::string name, std::string section="")const;
     std::string read_any_line(int pos)const;
     std::string read_any_line(std::string name)const;
-    void set_line(int pos, std::string value, std::string section="");
-    void set_line(std::string name, std::string value, std::string section="");
-    void set_any_line(int pos, std::string value);
-    void set_any_line(std::string name, std::string value);
+    void set_line(int pos, std::string value, std::string section="") throw(std::invalid_argument);
+    void set_line(std::string name, std::string value, std::string section="") throw(std::invalid_argument);
+    void set_any_line(int pos, std::string value) throw(std::invalid_argument);
+    void set_any_line(std::string name, std::string value) throw(std::invalid_argument);
 
 
 private:

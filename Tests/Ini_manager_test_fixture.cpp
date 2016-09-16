@@ -67,16 +67,16 @@ TEST_F(Testing_manager, Get_entry_and_lenght_test){
 TEST_F(Testing_manager, Set_test){
     testing.set_line(0, "FALSE");
     testing.set_line(1, "3", "");
-    testing.set_line(2, "3");
+    ASSERT_THROW(testing.set_line(2, "3"), std::invalid_argument);
     testing.set_line(99, "not present");
     testing.set_line("G", "\"not ok\"");
-    testing.set_line("unsectioned comment", "not possible to set", "");
+    ASSERT_THROW(testing.set_line("unsectioned comment", "not possible to set", ""), std::invalid_argument);
     testing.set_line("not present", "7");
     testing.set_any_line(7, "41");
-    testing.set_any_line(6, "not a string");
+    ASSERT_THROW(testing.set_any_line(6, "not a string"), std::invalid_argument);
     testing.set_any_line(99, "not present");
     testing.set_any_line("Pi", "3.141");
-    testing.set_any_line("CAT", "not a bool");
+    ASSERT_THROW(testing.set_any_line("CAT", "not a bool"), std::invalid_argument);
     testing.set_any_line("not present", "cam't");
     testing.set_any_line("F", "3.2");
     std::string testini=

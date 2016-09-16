@@ -56,14 +56,14 @@ TEST_F(section_fixture_test, testing_remove) {
 }
 
 TEST_F(section_fixture_test, testing_set) {
-    testing.set_line(0, "FALSE");
+    ASSERT_THROW(testing.set_line(0, "FALSE"), std::invalid_argument);
     testing.set_line(1, "FALSE");
     testing.set_line("NAME", "\"NO NAME\"");
     testing.set_line("not present", "FALSE");
     testing.set_line_type(2, float_entry, "5.3");
-    testing.set_line_type(2, float_entry, "5");
+    ASSERT_THROW(testing.set_line_type(2, float_entry, "5"), std::invalid_argument);
     testing.set_line_type("ANSWER", bool_entry, "TRUE");
-    testing.set_line_type("ANSWER", bool_entry, "5.3");
+    ASSERT_THROW(testing.set_line_type("ANSWER", bool_entry, "5.3"), std::invalid_argument);
     std::string expected="!a comment\n"
             "CAT = FALSE\n"
             "DOG = 5.3\n"
