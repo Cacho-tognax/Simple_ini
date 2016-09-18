@@ -12,6 +12,9 @@ void Ini_entry::set(std::string entry) throw(std::invalid_argument){
     std::vector<std::string> parts;
     type=identify(entry, parts);
     if (type==to_ignore||type==section_head){
+#ifdef DEBUG
+        std::cout << "such string is not an entry" << std::endl;
+#endif
         throw std::invalid_argument(entry);
     }
     name=parts[0];
@@ -28,15 +31,19 @@ void Ini_entry::set(std::string entry) throw(std::invalid_argument){
 }
 
 void Ini_entry::set(enum entry_type ty, std::string name, std::string value) throw(std::invalid_argument){
-    this->type=ty;
     if (type==comment){
+        this->type=ty;
         this->name=name;
         this->value="";
     } else{
         std::string tmp= name + " = " + value;
-        if(identify(tmp)!=type){
+        if(identify(tmp)!=ty){
+#ifdef DEBUG
+            std::cout << "new value is not of new type" << std::endl;
+#endif
             throw std::invalid_argument(tmp);
         }else{
+            this->type=ty;
             this->name=name;
             this->value=value;
         }
@@ -80,16 +87,13 @@ enum entry_type Ini_entry::identify(std::string entry, std::vector<std::string>&
         std::string tmp_string = entry.substr(0, the_char);
         if(tmp_string.find_first_not_of(" ", 0)==std::string::npos)  //no non space found
             return to_ignore; //no actual name
-        std::string::size_type the_char2 = tmp_string.find_last_of(" ", std::string::npos);
-        while(the_char2==tmp_string.size()-1){    //while we have a space at the end
-            tmp_string.erase(the_char2);
-            the_char2 = tmp_string.find_last_of(" ", std::string::npos);
-        }
+        remove_spaces_to_the_right(tmp_string);  //enclosed to a mehid since it's used twice
         parts.push_back(tmp_string);
         the_char = entry.find_first_not_of(" ", the_char+1);
         if(the_char==std::string::npos)
             return to_ignore;
         tmp_string=entry.substr(the_char);      //this is the value
+        remove_spaces_to_the_right(tmp_string);
         parts.push_back(tmp_string);            //even if it is invalid
         if(tmp_string.find_first_of("1234567890")!=std::string::npos && tmp_string.find_first_not_of("1234567890-.")==
                                                                                 std::string::npos) {
@@ -115,6 +119,14 @@ enum entry_type Ini_entry::identify(std::string entry, std::vector<std::string>&
             }
         return to_ignore;   //was none of the above
     }
+}
+
+void Ini_entry::remove_spaces_to_the_right(std::string &tmp_string) {
+    std::string::size_type the_char2 = tmp_string.find_last_of(" ", std::string::npos);
+    while(the_char2==tmp_string.size()-1){    //while we have a space at the end
+            tmp_string.erase(the_char2);
+            the_char2 = tmp_string.find_last_of(" ", std::string::npos);
+        }
 }
 
 enum entry_type Ini_entry::identify(std::string entry) {  //calls the previous one discarding the tokens

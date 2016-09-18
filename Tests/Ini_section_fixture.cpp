@@ -33,6 +33,8 @@ TEST_F(section_fixture_test, testing_read){
     std::string expected_line="DOG = 7";
     ASSERT_EQ(testing.read_line(2), expected_line);
     ASSERT_EQ(testing.read_line("DOG"), expected_line);
+    ASSERT_THROW(testing.read_line(5), std::out_of_range);
+    ASSERT_THROW(testing.read_line("not present"), std::invalid_argument);
     std::string expected="!a comment\n"
             "CAT = TRUE\n"
             "DOG = 7\n"
@@ -43,10 +45,10 @@ TEST_F(section_fixture_test, testing_read){
 
 TEST_F(section_fixture_test, testing_remove) {
     testing.remove_line(0);
-    testing.remove_line(4);
+    ASSERT_THROW(testing.remove_line(4), std::out_of_range);
     testing.remove_line("DOG");
-    testing.remove_line("DOG");
-    testing.remove_line("not present");
+    ASSERT_THROW(testing.remove_line("DOG"), std::invalid_argument);
+    ASSERT_THROW(testing.remove_line("not present"), std::invalid_argument);
     std::string expected="CAT = TRUE\n"
             "ANSWER = 42\n"
             "NAME = \"MARVIN\"\n";
@@ -59,7 +61,8 @@ TEST_F(section_fixture_test, testing_set) {
     ASSERT_THROW(testing.set_line(0, "FALSE"), std::invalid_argument);
     testing.set_line(1, "FALSE");
     testing.set_line("NAME", "\"NO NAME\"");
-    testing.set_line("not present", "FALSE");
+    ASSERT_THROW(testing.set_line("not present", "FALSE"), std::invalid_argument);
+    ASSERT_THROW(testing.set_line(42, ""), std::out_of_range);
     testing.set_line_type(2, float_entry, "5.3");
     ASSERT_THROW(testing.set_line_type(2, float_entry, "5"), std::invalid_argument);
     testing.set_line_type("ANSWER", bool_entry, "TRUE");

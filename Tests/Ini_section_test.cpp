@@ -35,7 +35,7 @@ TEST(Ini_section_test, Test_add_and_get){
     ASSERT_EQ(testing.get_line(3), unordered_entry);
     ASSERT_EQ(testing.get_line(4), ordered_string);
     ASSERT_EQ(testing.get_line(5), ordered_definition);
-    ASSERT_EQ(testing.get_line(6), dummy);
+    ASSERT_THROW(testing.get_line(6), std::out_of_range);
 
     ASSERT_EQ(testing.get_line("string"), string);
     ASSERT_EQ(testing.get_line("Definition"), definition);
@@ -43,6 +43,6 @@ TEST(Ini_section_test, Test_add_and_get){
     ASSERT_EQ(testing.get_line("0"), unordered_entry);
     ASSERT_EQ(testing.get_line("1"), ordered_definition);
     ASSERT_EQ(testing.get_line("4"), ordered_string);
-    ASSERT_EQ(testing.get_line("not exisiting"), dummy);
+    ASSERT_THROW(testing.get_line("not exisiting"), std::invalid_argument);
 
 }

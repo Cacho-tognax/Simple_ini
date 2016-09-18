@@ -28,6 +28,9 @@ public:
             if (type==string_entry) {  // removing the ""
                 if(this->value.size()<3){      //to avoid segmentation faults
                     std::string tmp= name + " = " + value;
+#ifdef DEBUG
+                    std::cout << "value too short, no room for the double quotation marks" << std::endl;
+#endif
                     throw std::invalid_argument(tmp);
                 }
                 this->value.erase(this->value.begin());
@@ -36,6 +39,9 @@ public:
 
             std::string tmp= name + " = " + value;
             if(identify(tmp)!=type){
+#ifdef DEBUG
+                std::cout << "value is not of type or invalid name(only spaces or with an=)" << std::endl;
+#endif
                 throw std::invalid_argument(tmp);
             }
         }
@@ -124,6 +130,7 @@ private:
     std::string name;
     std::string value;    // if type is comment or section_head, this will be an empty string
 
+    static void remove_spaces_to_the_right(std::string &tmp_string);
 };
 
 
