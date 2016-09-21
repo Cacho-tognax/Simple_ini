@@ -163,4 +163,52 @@ enum entry_type Ini_entry::identify(std::string entry) {  //calls the previous o
     return identify(entry, parts);
 }
 
+bool Ini_entry::operator ==(const Ini_entry rhs) const{
+    if(type!= rhs.get_type())
+        return false;
+    if(name!= rhs.get_name())
+        return false;
+    return !(value != rhs.get_value());  //just to make clion happy
+}
 
+void Ini_entry::change_type(const entry_type &typ, const std::string &valu) throw(std::invalid_argument){
+    if(type==comment){
+#ifdef DEBUG
+        std::cout << "can't change comment entry type" << std::endl;
+#endif
+        throw std::invalid_argument(this->read() + " = "+ valu);
+    }
+    std::string tmp = name + " = " + valu;
+    if(identify(tmp)==typ) {
+        type = typ;
+        value = valu;
+    } else{
+#ifdef DEBUG
+        std::cout << "new value type and new type are not equal" << std::endl;
+#endif
+        throw std::invalid_argument(tmp);
+    }
+}
+
+void Ini_entry::set_value(std::string valu) throw(std::invalid_argument){
+    if(type!=comment) {
+        std::string tmp = name + " = " + valu;
+        if (identify(tmp) == type) {
+            if (type==string_entry) {  // removing the ""
+                valu.erase(valu.begin());
+                valu.erase(--valu.end());
+            }
+            value = valu;
+        } else {
+#ifdef DEBUG
+            std::cout << "new value type and current type are not equal" << std::endl;
+#endif
+            throw std::invalid_argument(tmp);
+        }
+    }else{
+#ifdef DEBUG
+        std::cout << "can't change comment value!" << std::endl;
+#endif
+        throw std::invalid_argument(this->read() + " = "+ valu);
+    }
+}

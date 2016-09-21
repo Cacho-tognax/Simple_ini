@@ -55,7 +55,8 @@ private:
     }
 
     std::list<Ini_entry*>::const_iterator search(int pos)const throw(std::out_of_range);
-    std::list<Ini_entry*>::const_iterator search(std::string name)const throw(std::invalid_argument);     /* wrapping frequently used code in functions
+    std::list<Ini_entry*>::const_iterator search(std::string name)const throw(std::invalid_argument);
+                                                                  /* wrapping frequently used code in functions
                                                                    * both return entries.end() if not found
                                                                    */
     std::string name;

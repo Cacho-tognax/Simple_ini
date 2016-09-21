@@ -84,8 +84,6 @@ private:
                                                                     */
     std::list<Ini_section*>::const_iterator search(std::string name)const throw(std::invalid_argument); /* wrapping
                                                                       * frequently used code in functions
-                                                                      * both return an iterator to the last section
-                                                                      * of the file if not found
                                                                       */
 
     std::list<Ini_section*>::const_iterator section_search(int pos)const throw(std::out_of_range);
