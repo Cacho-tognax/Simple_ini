@@ -4,6 +4,35 @@
 
 #include"Ini_entry.h"
 
+Ini_entry::Ini_entry(enum entry_type ty, std::string name, std::string value) throw(std::invalid_argument):
+        type(ty), name(name), value(value){
+    if (type==comment){
+        this->value="";
+    } else{
+        if (type==string_entry) {  // removing the ""
+            if(this->value.size()<3){      //to avoid segmentation faults
+                std::string tmp= name + " = " + value;
+#ifdef DEBUG
+                std::cout << "value too short, no room for the double quotation marks" << std::endl;
+#endif
+                throw std::invalid_argument(tmp);
+            }
+            this->value.erase(this->value.begin());
+            this->value.erase(--this->value.end());
+        }
+
+        std::string tmp= name + " = " + value;
+        if(identify(tmp)!=type){
+#ifdef DEBUG
+            std::cout << "value is not of type or invalid name(only spaces or with an=)" << std::endl;
+#endif
+            throw std::invalid_argument(tmp);
+        }
+    }
+
+}
+
+
 Ini_entry::Ini_entry(std::string entry) throw(std::invalid_argument){
     set(entry);
 }
